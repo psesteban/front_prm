@@ -17,10 +17,14 @@ const Navigation = () => {
     if (!getProfesional) {
       return (
         <>
-          <Button variant='info' href='prmbuin.netlify.app/login'>Iniciar Sesión</Button>
-          <Button variant='light' size='sm' href='prmbuin.netlify.app/login_admin'>admin</Button>
-
+          <Link to='/login'>
+            <Button variant='info'>Iniciar Sesión</Button>
+          </Link>
+          <Link to='/login_admin'>
+            <Button variant='light' size='sm'>admin</Button>
+          </Link>
         </>
+
       )
     }
 
