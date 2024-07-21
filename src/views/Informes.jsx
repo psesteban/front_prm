@@ -44,11 +44,11 @@ const Profile = () => {
   })
 
   const handleCloseModal = () => {
-    selectId(null)
+    setSelectId(null)
     setShowModal(false)
   }
   const handleClose = () => {
-    selectId(null)
+    setSelectId(null)
     setShow(false)
   }
   const handleShowModal = () => setShowModal(true)
@@ -98,8 +98,8 @@ const Profile = () => {
       })
       const mensaje = `fecha actualizada al 🆕 ${date} 📅`
       updateCasos(updatedData)
-      handleClose()
       notify(mensaje)
+      handleClose()
     } catch (error) {
 
     }
@@ -112,21 +112,21 @@ const Profile = () => {
         headers: { Authorization: `Bearer ${token}` }
       })
       const foundNna = casos.find((nna) => nna.id === selectId)
-      const mensaje = `👋Adios 🖖 ${foundNna.nombre} 🖖`
+      const mensaje = `👋Adios ${foundNna.nombre}🖖`
       const updatedData = casos.filter((nna) => nna.id !== selectId)
       updateCasos(updatedData)
       setSelectId(null)
-      handleCloseModal()
       notify(mensaje)
+      handleCloseModal()
     } catch (error) {
       console.error('Error al eliminar NNA:', error)
       notifyError('error al eliminar de la base de datos, ver consola')
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     handleShowModal()
-    selectId(id)
+    setSelectId(id)
   }
 
   return (
@@ -180,17 +180,17 @@ const Profile = () => {
           </tr>
         ))}
       </tbody>
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal show={showModal} onHide={() => { handleCloseModal() }}>
         <Modal.Header closeButton>
-          <Modal.Title>Envio de Informe</Modal.Title>
+          <Modal.Title>Eliminar de la base de datos</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Es seguro que terminaste tu parte del informe?</Modal.Body>
+        <Modal.Body>Es seguro que esta listo el Egreso?</Modal.Body>
         <Modal.Footer>
-          <Button variant='secondary' onClick={handleCloseModal}>
-            Aún no lo termino 🫢
+          <Button variant='secondary' onClick={() => { handleCloseModal() }}>
+            Aún no🫢
           </Button>
-          <Button variant='primary' onClick={deleteNna}>
-            Terminado👍
+          <Button variant='primary' onClick={() => { deleteNna() }}>
+            Si👍
           </Button>
         </Modal.Footer>
       </Modal>

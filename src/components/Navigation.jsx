@@ -7,7 +7,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 const Navigation = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional } = useContext(Context)
-  console.log(getProfesional)
   const logout = () => {
     setProfesional(null)
     window.sessionStorage.removeItem('token')
