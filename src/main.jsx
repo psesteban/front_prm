@@ -1,10 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import Context from './contexts/context.js'
 import './index.css'
+import useProfesional from './hooks/useProfesional.jsx'
+
+const globalState = useProfesional()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <Context.Provider value={globalState}>
     <App />
-  </React.StrictMode>
+  </Context.Provider>
 )
