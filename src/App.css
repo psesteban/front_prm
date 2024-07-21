@@ -1,12 +1,6 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
 body {
-  background-image: url('./src/assets/freepik_macrovector.svg');
+  background-image: url('./assets/freepik_macrovector.svg');
   background-size:contain; 
   background-repeat: repeat;
   background-position: center;
