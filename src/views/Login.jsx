@@ -36,7 +36,7 @@ const Login = () => {
   }
 
   return (
-    <Container>
+    <Container className='login'>
       <Row className='justify-content-center'>
         <Col>
           <Form onSubmit={handleForm}>
@@ -72,10 +72,10 @@ const Login = () => {
                   aria-hidden='true'
                 />
                 Entrando...🔐
-                </Button>
+              </Button>
               : <Button variant='primary' type='submit'>
                 Entrar
-                </Button>}
+              </Button>}
           </Form>
         </Col>
       </Row>

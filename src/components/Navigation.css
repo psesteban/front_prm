@@ -1,0 +1,8 @@
+
+.navbar {
+  background: transparent;
+  background-color: transparent;
+}
+.navbar-brand {
+  display: flex;
+}

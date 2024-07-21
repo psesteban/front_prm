@@ -37,11 +37,11 @@ const LoginAdmin = () => {
   }
 
   return (
-    <Container>
+    <Container className='login'>
       <Row>
         <Col>
           <Form onSubmit={handleForm}>
-            <h1 className='text-center'>Iniciar asesoria</h1>
+            <h1 className='text-center'>Iniciar Asesoría</h1>
             <hr />
             <Form.Group controlId='formName'>
               <Form.Label>Nombre</Form.Label>

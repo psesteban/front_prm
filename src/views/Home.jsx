@@ -7,6 +7,7 @@ const Home = () => {
       <h4>
         Organización de informes y otros
       </h4>
+      <h6>PRM Buin-Paine I</h6>
     </div>
   )
 }
