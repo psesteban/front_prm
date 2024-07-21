@@ -3,10 +3,11 @@ import { useContext, useState } from 'react'
 import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap'
 import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker'
 import { ENDPOINT } from '../config/constans.js'
-import Swal from 'sweetalert2'
 import axios from 'axios'
 import { es } from 'date-fns/locale/es'
 import 'react-datepicker/dist/react-datepicker.css'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import './Informes.css'
 
 registerLocale('es', es)
@@ -18,7 +19,40 @@ const Profile = () => {
   const { getProfesional, fechaEntrega, casos, updateCasos } = useContext(Context)
   const [show, setShow] = useState(false)
   const [selectId, setSelectId] = useState(null)
-  const handleClose = () => setShow(false)
+  const [showModal, setShowModal] = useState(false)
+
+  const notify = (message) => toast.success(message, {
+    position: 'top-right',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'colored'
+  })
+
+  const notifyError = (message) => toast.success(message, {
+    position: 'top-center',
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'dark'
+  })
+
+  const handleCloseModal = () => {
+    selectId(null)
+    setShowModal(false)
+  }
+  const handleClose = () => {
+    selectId(null)
+    setShow(false)
+  }
+  const handleShowModal = () => setShowModal(true)
+
   const handleShow = (id) => {
     setShow(true)
     setSelectId(id)
@@ -62,74 +96,37 @@ const Profile = () => {
           return nna
         }
       })
+      const mensaje = `fecha actualizada al 🆕 ${date} 📅`
       updateCasos(updatedData)
       handleClose()
-      return Swal.fire({
-        title: 'fecha actualizada',
-        width: 600,
-        padding: '3em',
-        color: '#716add',
-        background: '#fff url("https://img.freepik.com/vector-gratis/vector-patrones-fisuras-fondo-lindo-memphis_53876-105506.jpg")',
-        backdrop: `
-              rgba(0,0,123,0.4)
-              url("https://i.giphy.com/L5LRkP5bUDFiZee7w2.webp")
-              left top
-              no-repeat
-            `
-      })
+      notify(mensaje)
     } catch (error) {
-      Swal.showValidationMessage(`
-            Request failed: ${error}`)
+
     }
   }
 
-  const deleteNna = async (id) => {
+  const deleteNna = async () => {
     try {
       await axios.delete(ENDPOINT.data, {
-        data: { id },
+        data: { selectId },
         headers: { Authorization: `Bearer ${token}` }
       })
-      const updatedData = casos.filter((nna) => nna.id !== id)
+      const foundNna = casos.find((nna) => nna.id === selectId)
+      const mensaje = `👋Adios 🖖 ${foundNna.nombre} 🖖`
+      const updatedData = casos.filter((nna) => nna.id !== selectId)
       updateCasos(updatedData)
+      setSelectId(null)
+      handleCloseModal()
+      notify(mensaje)
     } catch (error) {
       console.error('Error al eliminar NNA:', error)
+      notifyError('error al eliminar de la base de datos, ver consola')
     }
   }
 
   const handleDelete = async (id) => {
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false
-    })
-    swalWithBootstrapButtons.fire({
-      title: 'Estas a pundo de eliminar al NNA de la base de datos',
-      text: 'Es seguro que esta realizado el egreso?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si, esta listo',
-      cancelButtonText: 'No, aún no🫢',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire({
-          title: 'Eliminado',
-          text: '👋',
-          icon: 'success'
-        })
-        deleteNna(id)
-      } else if (
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        swalWithBootstrapButtons.fire({
-          title: 'No hay problema',
-          text: 'Avísame cuando sea el tiempo',
-          icon: 'error'
-        })
-      }
-    })
+    handleShowModal()
+    selectId(id)
   }
 
   return (
@@ -183,6 +180,20 @@ const Profile = () => {
           </tr>
         ))}
       </tbody>
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Envio de Informe</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Es seguro que terminaste tu parte del informe?</Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={handleCloseModal}>
+            Aún no lo termino 🫢
+          </Button>
+          <Button variant='primary' onClick={deleteNna}>
+            Terminado👍
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Table>
   )
 }

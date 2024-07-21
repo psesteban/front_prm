@@ -3,11 +3,10 @@ import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Modal } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Swal from 'sweetalert2'
 import { Progress } from 'react-sweet-progress'
 import 'react-sweet-progress/lib/style.css'
 import './Profile.css'
@@ -21,6 +20,12 @@ const Profile = () => {
   const [logro, setLogro] = useState(100)
   const [plan, setPlan] = useState(false)
   const [win, setWin] = useState(false)
+  const [show, setShow] = useState(false)
+  const [selectId, setSelectId] = useState(null)
+
+  // configuración del modal
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
 
   // mensaje felicidades al clickear termino de informe
   const notify = (idNna) => toast.success(`felicidades ${nombre.nombre} terminaste tu parte del informe de ${idNna} 💝`, {
@@ -55,55 +60,28 @@ const Profile = () => {
     }
   }
 
-  const putData = async (rol, id) => await axios.put(ENDPOINT.user, { rol, id }, {
+  const putData = async (id) => await axios.put(ENDPOINT.user, { rol: nombre.rol, id }, {
     headers: { Authorization: `Bearer ${token}` }
   })
 
-  const handleClick = async (rol, id) => {
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false
-    })
-    swalWithBootstrapButtons.fire({
-      title: 'En serio?',
-      text: 'Terminaste tu parte del informe?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si, avisa 💪!',
-      cancelButtonText: 'No, aún no🫢',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire({
-          title: 'Felicidades!🎉',
-          text: 'avisaré 📞',
-          icon: 'success'
-        })
-        const foundNna = casos.find((nna) => nna.id === id)
-        const updateNna = { ...foundNna, estado: true }
-        const updatedData = getProfesional.casos.map((nna) => {
-          if (nna.id === id) {
-            return updateNna
-          } else {
-            return nna
-          }
-        })
-        setProfesional(updatedData)
-        notify(foundNna.nombre)
-        putData(rol, id)
-      } else if (
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        swalWithBootstrapButtons.fire({
-          title: 'No hay problema',
-          text: 'Avísame cuando lo tengas listo🫣',
-          icon: 'error'
-        })
+  const okButton = () => {
+    const foundNna = casos.find((nna) => nna.id === selectId)
+    const updateNna = { ...foundNna, estado: true }
+    const updatedData = getProfesional.casos.map((nna) => {
+      if (nna.id === selectId) {
+        return updateNna
+      } else {
+        return nna
       }
     })
+    setProfesional(updatedData)
+    notify(foundNna.nombre)
+    putData(selectId)
+  }
+
+  const handleClick = async (id) => {
+    setSelectId(id)
+    handleShow()
   }
 
   useEffect(() => {
@@ -189,7 +167,7 @@ const Profile = () => {
                   <ListGroup.Item key={pendiente.id}>
                     {pendiente.nombre} - {pendiente.estado
                       ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-warning' onClick={() => handleClick(nombre.rol, pendiente.id)}>{pendiente.fechaInformePendiente}</Button>}{' '}
+                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id)}>{pendiente.fechaInformePendiente}</Button>}{' '}
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -203,7 +181,7 @@ const Profile = () => {
                   <ListGroup.Item key={atrasado.id}>
                     {atrasado.nombre} - {atrasado.estado
                       ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-danger' onClick={() => handleClick(nombre.rol, atrasado.id)}>{atrasado.fechaInformePendiente}⌛🔲</Button>}{' '}
+                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id)}>{atrasado.fechaInformePendiente}⌛🔲</Button>}{' '}
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -211,6 +189,22 @@ const Profile = () => {
           </Card>
         </>
       )}
+      <>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Envio de Informe</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Es seguro que terminaste tu parte del informe?</Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={handleClose}>
+              Aún no lo termino 🫢
+            </Button>
+            <Button variant='primary' onClick={okButton}>
+              Terminado👍
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     </Container>
   )
 }
