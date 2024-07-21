@@ -17,8 +17,8 @@ const Navigation = () => {
     if (!getProfesional) {
       return (
         <>
-          <Button variant='info' href='/login'>Iniciar Sesión</Button>
-          <Button variant='light' size='sm' href='/login_admin'>admin</Button>
+          <Button variant='info' href='prmbuin.netlify.app/login'>Iniciar Sesión</Button>
+          <Button variant='light' size='sm' href='prmbuin.netlify.app/login_admin'>admin</Button>
 
         </>
       )
