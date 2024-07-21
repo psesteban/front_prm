@@ -3,15 +3,12 @@ import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Badge, Stack, Modal } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import Swal from 'sweetalert2'
 import { Progress } from 'react-sweet-progress'
 import 'react-sweet-progress/lib/style.css'
-import Badge from 'react-bootstrap/Badge'
-import Stack from 'react-bootstrap/Stack'
 import './Profile.css'
 
 const Admin = () => {
@@ -24,6 +21,12 @@ const Admin = () => {
   const [duplas, setDuplas] = useState(['duplas'])
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
+  const [show, setShow] = useState(false)
+  const [selectId, setSelectId] = useState(null)
+
+  // configuración del modal
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
 
   const randomId = () => Math.random().toString(3)
 
@@ -72,57 +75,30 @@ const Admin = () => {
     }
   }
 
-  const putData = async (rol, id) => await axios.put(ENDPOINT.admin, { rol, id }, {
+  const putData = async (id) => await axios.put(ENDPOINT.admin, { rol: 3, id }, {
     headers: { Authorization: `Bearer ${token}` }
   })
 
-  const handleClick = async (rol, id) => {
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false
-    })
-    swalWithBootstrapButtons.fire({
-      title: 'Está completa la revisión del informe?',
-      text: 'El informe ya se envió?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si, listo',
-      cancelButtonText: 'No, aún no',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire({
-          title: 'Base de datos actualizada',
-          text: 'Listo',
-          icon: 'success'
-        })
-        const foundNna = casos.find((nna) => nna.id === id)
-        const number = parseInt(foundNna.informe) + 1
-        const updateNna = { ...foundNna, informe: number }
-        const updatedData = casos.map((nna) => {
-          if (nna.id === id) {
-            return updateNna
-          } else {
-            return nna
-          }
-        })
-        setProfesional(updatedData)
-        notify(foundNna.nombre)
-        putData(rol, id)
-        navigate('/admin')
-      } else if (
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        swalWithBootstrapButtons.fire({
-          title: 'No hay problema',
-          text: 'Avísame cuando lo tengas listo👍',
-          icon: 'error'
-        })
+  const okButton = () => {
+    const foundNna = casos.find((nna) => nna.id === selectId)
+    const number = parseInt(foundNna.informe) + 1
+    const updateNna = { ...foundNna, informe: number }
+    const updatedData = casos.map((nna) => {
+      if (nna.id === selectId) {
+        return updateNna
+      } else {
+        return nna
       }
     })
+    setProfesional(updatedData)
+    putData(selectId)
+    notify(foundNna.nombre)
+    setSelectId(null)
+    handleClose()
+  }
+  const handleClick = async (id) => {
+    setSelectId(id)
+    handleShow()
   }
 
   useEffect(() => {
@@ -198,13 +174,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-                </ListGroup>
+              </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-                </ListGroup>}
+              </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>
@@ -214,7 +190,7 @@ const Admin = () => {
                   <ListGroup.Item key={pendiente.id}>
                     {pendiente.nombre} {pendiente.estado
                       ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-warning' onClick={() => handleClick(3, pendiente.id)}>{pendiente.fechaInformePendiente}</Button>}{' '}
+                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id)}>{pendiente.fechaInformePendiente}</Button>}{' '}
                     <Stack direction='horizontal' gap={2}>
                       <h6> I. psicológico {pendiente.ps
                         ? <Badge bg='success'>✔️</Badge>
@@ -238,7 +214,7 @@ const Admin = () => {
                   <ListGroup.Item key={atrasado.id}>
                     {atrasado.nombre} {atrasado.estado
                       ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-danger' onClick={() => handleClick(3, atrasado.id)}>{atrasado.fechaInformePendiente}</Button>}{' '}
+                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id)}>{atrasado.fechaInformePendiente}</Button>}{' '}
                     <Stack direction='horizontal' gap={2}>
                       <h6> I. psicológico {atrasado.ps
                         ? <Badge bg='success'>✔️</Badge>
@@ -256,6 +232,22 @@ const Admin = () => {
           </Card>
         </>
       )}
+      <>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Envio de Informe</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Es seguro que el informe está enviado?</Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={handleClose}>
+              Aún no
+            </Button>
+            <Button variant='primary' onClick={okButton}>
+              Enviado👍
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     </Container>
   )
 }
