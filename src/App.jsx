@@ -20,12 +20,12 @@ const App = () => {
       <Context.Provider value={globalState}>
         <Navigation />
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/perfil' element={<Profile />} />
-          <Route path='/total' element={<Informes />} />
-          <Route path='/admin' element={<Admin />} />
-          <Route path='/login_admin' element={<LoginAdmin />} />
+          <Route path='prmbuin.netlify.app/' element={<Home />} />
+          <Route path='prmbuin.netlify.app/login' element={<Login />} />
+          <Route path='prmbuin.netlify.app/perfil' element={<Profile />} />
+          <Route path='prmbuin.netlify.app/total' element={<Informes />} />
+          <Route path='prmbuin.netlify.app/admin' element={<Admin />} />
+          <Route path='prmbuin.netlify.app/login_admin' element={<LoginAdmin />} />
         </Routes>
         <ToastContainer />
       </Context.Provider>
