@@ -3,12 +3,13 @@ import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans'
 import Context from '../contexts/context.js'
-import { Form, Button, Container, Row, Col } from 'react-bootstrap'
+import { Form, Button, Container, Row, Col, Spinner } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const Login = () => {
   const navigate = useNavigate()
   const [user, setUser] = useState({ name: '', password: '' })
+  const [load, setLoad] = useState(false)
   const { setProfesional } = useContext(Context)
 
   const handleUser = (event) => setUser({ ...user, [event.target.name]: event.target.value })
@@ -19,11 +20,13 @@ const Login = () => {
     if (!user.name.trim() || !user.password.trim()) {
       return alert('Nombre y contraseña son obligatorios.')
     }
+    setLoad(true)
     axios.post(ENDPOINT.user, user)
       .then(({ data }) => {
         sessionStorage.setItem('token', data.token)
         alert('Usuario identificado con éxito 😀.')
         setProfesional({})
+        setLoad(false)
         navigate('/perfil')
       })
       .catch(({ response: { data } }) => {
@@ -59,9 +62,20 @@ const Login = () => {
                 placeholder='Contraseña'
               />
             </Form.Group>
-            <Button variant='primary' type='submit'>
-              Ingresa
-            </Button>
+            {load
+              ? <Button variant='primary' disabled>
+                <Spinner
+                  as='span'
+                  animation='grow'
+                  size='sm'
+                  role='status'
+                  aria-hidden='true'
+                />
+                Entrando...🔐
+                </Button>
+              : <Button variant='primary' type='submit'>
+                Entrar
+                </Button>}
           </Form>
         </Col>
       </Row>
