@@ -15,7 +15,6 @@ const Admin = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, setData, casos } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
-  const [contadordeVacio, setContadordeVacio] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
   const [duplas, setDuplas] = useState(['duplas'])
@@ -108,7 +107,6 @@ const Admin = () => {
     // Verificar si getProfesional es null, undefined o un objeto vacío
     if (!getProfesional || typeof getProfesional === 'undefined' || isEmptyObject(getProfesional)) {
       getProfesionalData()
-      setContadordeVacio(contadordeVacio + 1)
     }
   }, [])
 
@@ -129,21 +127,20 @@ const Admin = () => {
     if (getAtrasos.length > 0 && !isLoading) {
       percentWork()
     }
+    console.log(getProfesional)
   }, [getAtrasos, getPendientes])
 
   const percentWork = () => {
     if (filter) {
       const totalCasos = 25
       const totalAtrasos = getAtrasos.length
-      const totalPendientes = getPendientes.length
-      const descuento = totalCasos - (totalAtrasos) - (totalPendientes * 0.5)
+      const descuento = totalCasos - (totalAtrasos)
       const porcentaje = (descuento * 100 / totalCasos)
       setLogro(porcentaje)
     } else {
       const totalCasos = casos.length
       const totalAtrasos = getAtrasos.length
-      const totalPendientes = getPendientes.length
-      const descuento = totalCasos - (totalAtrasos) - (totalPendientes * 0.5)
+      const descuento = totalCasos - (totalAtrasos)
       const porcentaje = (descuento * 100 / totalCasos)
       setLogro(porcentaje)
     }
@@ -153,12 +150,12 @@ const Admin = () => {
     <Container className='resumen'>
       {isLoading && (
         <h1>
-          Cargando datos del profesional... <p>Dame unos segundos ⌛ {contadordeVacio}</p>
+          Cargando datos del profesional... <p>Dame unos segundos ⌛</p>
         </h1>
       )}
       {!isLoading && !getProfesional && (
         <h1>
-          Un poco más ⌛ <span className='fw-bold'>{contadordeVacio}</span>
+          Un poco más ⌛
         </h1>
       )}
       {!isLoading && getProfesional && (
@@ -174,13 +171,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-                </ListGroup>
+              </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-                </ListGroup>}
+              </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>

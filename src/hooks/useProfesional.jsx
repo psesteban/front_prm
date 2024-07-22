@@ -8,11 +8,9 @@ const useProfesional = () => {
 
   const fechaEntrega = (fecha, quarters) => {
     const date = new Date(fecha)
-    const newYear = date.getFullYear() + Math.floor(quarters / 4)
-    const newQuarter = (date.getMonth() + 1) + (quarters % 4) * 3
-    const newMonth = (newQuarter - 1) % 12
-    const newMonthDay = Math.min(date.getDate(), new Date(newYear, newMonth + 1, 0).getDate())
-    const newDate = new Date(newYear, newMonth, newMonthDay)
+    const totalMonths = quarters * 3
+    const newMonth = date.getMonth() + totalMonths
+    const newDate = new Date(date.setMonth(newMonth))
     return newDate
   }
 
