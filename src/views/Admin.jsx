@@ -127,7 +127,7 @@ const Admin = () => {
     if (getAtrasos.length > 0 && !isLoading) {
       percentWork()
     }
-    console.log(getProfesional)
+    filterAtrasos()
   }, [getAtrasos, getPendientes])
 
   const percentWork = () => {
@@ -171,13 +171,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-              </ListGroup>
+                </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-              </ListGroup>}
+                </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>

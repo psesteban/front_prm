@@ -77,7 +77,17 @@ const Profile = () => {
     setProfesional(updatedData)
     notify(foundNna.nombre)
     putData(selectId)
+    actualiza()
+  }
+
+  const actualiza = () => {
     filterAtrasos()
+    percentWork()
+    if (logro < 50) setPlan(true)
+    else setPlan(false)
+    if (logro > 90) {
+      setWin(true)
+    } else setWin(false)
   }
 
   const handleClick = async (id) => {
@@ -97,26 +107,13 @@ const Profile = () => {
 
   useEffect(() => {
     if (getProfesional && !isLoading) {
-      filterAtrasos()
+      actualiza()
     }
     if (getProfesional && !isLoading && typeof getProfesional.profesional !== 'undefined') {
       const { profesional } = getProfesional
       setNombre({ nombre: profesional.nombre, rol: profesional.idRol })
     }
   }, [isLoading])
-
-  useEffect(() => {
-    if (getAtrasos.length > 0 && !isLoading) {
-      percentWork()
-      if (logro < 30) setPlan(true)
-      else setPlan(false)
-    }
-    if (getPendientes.length > 0 && !isLoading) {
-      percentWork()
-      if (logro < 30) setPlan(true)
-      else setPlan(false)
-    }
-  }, [getAtrasos, getPendientes])
 
   const percentWork = () => {
     const totalCasos = casos.length
