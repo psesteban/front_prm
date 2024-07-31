@@ -77,6 +77,7 @@ const Profile = () => {
     setProfesional(updatedData)
     notify(foundNna.nombre)
     putData(selectId)
+    filterAtrasos()
   }
 
   const handleClick = async (id) => {

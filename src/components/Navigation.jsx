@@ -10,8 +10,6 @@ const Navigation = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional } = useContext(Context)
 
-  if (getProfesional) console.log('entraste como administrador')
-
   const logout = () => {
     setProfesional(null)
     window.sessionStorage.removeItem('token')
