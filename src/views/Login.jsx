@@ -14,7 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 const Login = () => {
   const navigate = useNavigate()
   const [user, setUser] = useState({ name: '', password: '' })
-  const [goouser, setGoouser] = useState({ name: '' })
+  const [goouser, setGoouser] = useState(null)
   const [load, setLoad] = useState(false)
   const { setProfesional } = useContext(Context)
   const handleUser = (event) => setUser({ ...user, [event.target.name]: event.target.value })
@@ -57,26 +57,26 @@ const Login = () => {
       const email = decoded.email
       const partes = email.split(/\.|@/)
       const nombreCompleto = partes.slice(0, 2).map(parte => parte.charAt(0).toUpperCase() + parte.slice(1)).join(' ')
-      console.log(nombreCompleto)
       setGoouser({ name: nombreCompleto })
-      axios.post(ENDPOINT.google, goouser)
-        .then(({ data }) => {
-          sessionStorage.setItem('token', data.token)
-          alert('Usuario identificado con éxito 😀.')
-          setProfesional({})
-          setLoad(false)
-          navigate('/perfil')
-        })
-        .catch(({ response: { data } }) => {
-          console.error(data.error)
-          window.alert(`no se encontro el usuario ${data.error} 🙁.`)
-          setLoad(false)
-        })
+      handleEntry(goouser)
     } catch (error) {
       console.error('Error durante ingreso con gmail:', error)
       setLoad(false)
     }
   }
+  const handleEntry = async (usuario) => await axios.post(ENDPOINT.google, usuario)
+    .then(({ data }) => {
+      sessionStorage.setItem('token', data.token)
+      alert('Usuario identificado con éxito 😀.')
+      setProfesional({})
+      setLoad(false)
+      navigate('/perfil')
+    })
+    .catch(({ response: { data } }) => {
+      console.error(data.error)
+      window.alert(`no se encontro el usuario ${data.error} 🙁.`)
+      setLoad(false)
+    })
 
   return (
     <Container className='login'>
