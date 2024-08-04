@@ -15,6 +15,9 @@ const Admin = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, setData, casos } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
+  const accesScript = window.sessionStorage.getItem('accestoken')
+  const urlScript = 'https://script.googleusercontent.com/a/macros/fundaciondem.cl/echo?user_content_key=fjJEnL4ocgIBV2Nok0vZ-V0OrYbJGNUZATxEVEDVbqfS-N5EUJGfmAzntRu_HGqQHP86m0olRNv4JsKbDaAQd1_9p8ka0Ev4OJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMi80zadyHLKB8BUNxsF9uTx1DmfU2jIlLFc8vL5kKEi0diVVRNvSu1fqNSIG1RtzAq7ANmImlOXb2ob3eWUknuIL8g6WjjyYM0dSkUUczY1IxIXPMCaQP89DL6zkhAw5XgKH5FOXaJf2agQEneoX2wQ&lib=MhBx1Tl4j65lsWnDPs1lRTqTnL97XiEFy'
+
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
   const [duplas, setDuplas] = useState(['duplas'])
@@ -36,8 +39,8 @@ const Admin = () => {
     setFilter(true)
   }
   const quitarFiltro = () => {
-    filterAtrasos()
     setFilter(false)
+    filterAtrasos()
   }
 
   // mensaje felicidades al clickear termino de informe
@@ -78,6 +81,10 @@ const Admin = () => {
     headers: { Authorization: `Bearer ${token}` }
   })
 
+  const postData = async () => await axios.post(urlScript, { logro })
+    .then((result) => console.log(result))
+    .catch((error) => console.log(error))
+
   const okButton = () => {
     const foundNna = casos.find((nna) => nna.id === selectId)
     const number = parseInt(foundNna.informe) + 1
@@ -116,12 +123,12 @@ const Admin = () => {
         ? [...new Set(casos.map(caso => caso.profesional))]
         : []
       setDuplas(profesionales)
+      filterAtrasos()
       percentWork()
     }
   }, [isLoading])
 
   const percentWork = () => {
-    filterAtrasos()
     if (filter) {
       const totalCasos = 25
       const totalAtrasos = getAtrasos.length
@@ -136,6 +143,9 @@ const Admin = () => {
       setLogro(porcentaje)
     }
   }
+  useEffect(() => {
+    percentWork()
+  }, [filter])
 
   return (
     <Container className='resumen'>
@@ -220,6 +230,7 @@ const Admin = () => {
           </Card>
         </>
       )}
+      <Button variant='outline-warning' onClick={() => postData()}>Probar</Button>{' '}
       <>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
