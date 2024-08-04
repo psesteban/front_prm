@@ -1,7 +1,12 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Context from '../contexts/context.js'
-import { Button, Container, Navbar } from 'react-bootstrap'
+import { Button, Container, Navbar, Spinner } from 'react-bootstrap'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { jwtDecode } from 'jwt-decode'
+import axios from 'axios'
+import { auth } from '../config/firebaseConfig.js'
+import { ENDPOINT } from '../config/constans'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Navigation.css'
 import Logo from '../assets/logo.svg' // Assuming logo is an SVG
@@ -9,7 +14,57 @@ import Logo from '../assets/logo.svg' // Assuming logo is an SVG
 const Navigation = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional } = useContext(Context)
+  const [goouser, setGoouser] = useState(null)
+  const [load, setLoad] = useState(false)
 
+  const loadGoogleScript = async () => {
+    const provider = new GoogleAuthProvider()
+    provider.addScope('https://www.googleapis.com/auth/script.external_request')
+    provider.addScope('https://www.googleapis.com/auth/script.processes')
+
+    try {
+      setLoad(true)
+      const result = await signInWithPopup(auth, provider)
+      const credential = GoogleAuthProvider.credentialFromResult(result)
+      const authCredential = GoogleAuthProvider.credential(result)
+      const accessToken = authCredential.idToken._tokenResponse.oauthAccessToken
+      const token = credential.idToken
+      sessionStorage.setItem('accestoken', accessToken)
+      const decoded = jwtDecode(token)
+      const verified = decoded.email_verified
+      if (!verified) {
+        setLoad(false)
+        return console.error('usuario, email o contraseña no es correcto')
+      }
+      const email = decoded.email
+      const partes = email.split(/\.|@/)
+      const nombreCompleto = partes.slice(0, 2).map(parte => parte.charAt(0).toUpperCase() + parte.slice(1)).join(' ')
+      setGoouser({ name: nombreCompleto })
+      handleEntry(goouser)
+    } catch (error) {
+      console.error('Error durante ingreso con gmail:', error)
+      setLoad(false)
+    }
+  }
+  const handleEntry = async (usuario) => await axios.post(ENDPOINT.google, usuario)
+    .then(({ data }) => {
+      const rol = data.rol
+      sessionStorage.setItem('usuario', data.rol)
+      sessionStorage.setItem('token', data.token)
+      alert('Usuario identificado con éxito 😀')
+      setProfesional({})
+      setLoad(false)
+      if (rol === 3) {
+        navigate('/admin')
+      } else {
+        navigate('/perfil')
+      }
+    })
+    .catch(({ response: { data } }) => {
+      console.error(data.error)
+      window.alert(`no se encontro el usuario ${data.error} 🙁.`)
+      setLoad(false)
+    })
   const logout = () => {
     setProfesional(null)
     window.sessionStorage.removeItem('token')
@@ -20,12 +75,18 @@ const Navigation = () => {
     if (!getProfesional) {
       return (
         <>
-          <Link to='/login'>
-            <Button variant='info'>Iniciar Sesión</Button>
-          </Link>
-          <Link to='/login_admin'>
-            <Button variant='light' size='sm'>admin</Button>
-          </Link>
+          {load
+            ? <Button variant='primary' disabled>
+              <Spinner
+                as='span'
+                animation='grow'
+                size='sm'
+                role='status'
+                aria-hidden='true'
+              />
+              Entrando...🔐
+            </Button>
+            : <Button onClick={() => loadGoogleScript()}>📧Ingresar</Button>}
         </>
       )
     }

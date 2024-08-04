@@ -116,21 +116,12 @@ const Admin = () => {
         ? [...new Set(casos.map(caso => caso.profesional))]
         : []
       setDuplas(profesionales)
-      filterAtrasos()
+      percentWork()
     }
   }, [isLoading])
 
-  useEffect(() => {
-    if (getPendientes.length > 0 && !isLoading) {
-      percentWork()
-    }
-    if (getAtrasos.length > 0 && !isLoading) {
-      percentWork()
-    }
-    filterAtrasos()
-  }, [getAtrasos, getPendientes])
-
   const percentWork = () => {
+    filterAtrasos()
     if (filter) {
       const totalCasos = 25
       const totalAtrasos = getAtrasos.length
