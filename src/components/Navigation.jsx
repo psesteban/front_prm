@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import Context from '../contexts/context.js'
 import { Button, Container, Navbar, Spinner } from 'react-bootstrap'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import { auth } from '../config/firebaseConfig.js'
 import { ENDPOINT } from '../config/constans'
@@ -25,21 +24,16 @@ const Navigation = () => {
     try {
       setLoad(true)
       const result = await signInWithPopup(auth, provider)
-      const credential = GoogleAuthProvider.credentialFromResult(result)
       const authCredential = GoogleAuthProvider.credential(result)
       const accessToken = authCredential.idToken._tokenResponse.oauthAccessToken
-      const token = credential.idToken
+      const verified = authCredential.idToken.user.emailVerified
+      const emailDeFundacion = authCredential.idToken.user.email
       sessionStorage.setItem('accestoken', accessToken)
-      const decoded = jwtDecode(token)
-      const verified = decoded.email_verified
       if (!verified) {
         setLoad(false)
         return console.error('usuario, email o contraseña no es correcto')
       }
-      const email = decoded.email
-      const partes = email.split(/\.|@/)
-      const nombreCompleto = partes.slice(0, 2).map(parte => parte.charAt(0).toUpperCase() + parte.slice(1)).join(' ')
-      setGoouser({ name: nombreCompleto })
+      setGoouser({ email: emailDeFundacion })
       handleEntry(goouser)
     } catch (error) {
       console.error('Error durante ingreso con gmail:', error)
@@ -49,8 +43,8 @@ const Navigation = () => {
   const handleEntry = async (usuario) => await axios.post(ENDPOINT.google, usuario)
     .then(({ data }) => {
       const rol = data.rol
-      sessionStorage.setItem('usuario', data.rol)
-      sessionStorage.setItem('token', data.token)
+      const token = data.token
+      sessionStorage.setItem('token', token)
       alert('Usuario identificado con éxito 😀')
       setProfesional({})
       setLoad(false)
