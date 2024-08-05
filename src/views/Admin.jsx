@@ -57,7 +57,6 @@ const Admin = () => {
 
   const getProfesionalData = async () => {
     setIsLoading(true)
-    console.log(token)
     try {
       const result = await axios.get(ENDPOINT.admin, {
         headers: { Authorization: `Bearer ${token}` }
@@ -173,13 +172,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-              </ListGroup>
+                </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-              </ListGroup>}
+                </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>
