@@ -99,7 +99,7 @@ const Admin = () => {
     putData(selectId, foundNna.nombre).then(
       (result) => {
         console.log(result)
-        notify(result)
+        notify(result.data)
         setSelectId(null)
         handleClose()
       }
@@ -176,13 +176,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-                </ListGroup>
+              </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-                </ListGroup>}
+              </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>
