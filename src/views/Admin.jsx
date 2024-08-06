@@ -40,7 +40,6 @@ const Admin = () => {
   }
   const quitarFiltro = () => {
     setFilter(false)
-    filterAtrasos()
   }
 
   // mensaje felicidades al clickear termino de informe
@@ -77,7 +76,7 @@ const Admin = () => {
     }
   }
 
-  const putData = async (id) => await axios.put(ENDPOINT.admin, { rol: 3, id }, {
+  const putData = async (id, nombre) => await axios.put(ENDPOINT.admin, { rol: 3, id, nombre }, {
     headers: { Authorization: `Bearer ${token}` }
   })
 
@@ -97,10 +96,14 @@ const Admin = () => {
       }
     })
     setProfesional(updatedData)
-    putData(selectId)
-    notify(foundNna.nombre)
-    setSelectId(null)
-    handleClose()
+    putData(selectId, foundNna.nombre).then(
+      (result) => {
+        console.log(result)
+        notify(result)
+        setSelectId(null)
+        handleClose()
+      }
+    ).catch((error) => console.error(error)).finally(() => { getProfesionalData() })
   }
   const handleClick = async (id) => {
     setSelectId(id)
@@ -136,6 +139,7 @@ const Admin = () => {
       const porcentaje = (descuento * 100 / totalCasos)
       setLogro(porcentaje)
     } else {
+      filterAtrasos()
       const totalCasos = casos.length
       const totalAtrasos = getAtrasos.length
       const descuento = totalCasos - (totalAtrasos)
