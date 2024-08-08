@@ -16,9 +16,10 @@ setDefaultLocale('es')
 const Profile = () => {
   const [startDate, setStartDate] = useState(new Date())
   const token = window.sessionStorage.getItem('token')
-  const { getProfesional, fechaEntrega, casos, updateCasos } = useContext(Context)
+  const { getProfesional, fechaEntrega } = useContext(Context)
   const [show, setShow] = useState(false)
   const [selectId, setSelectId] = useState(null)
+  const [selectNna, setSelectNna] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
   const notify = (message) => toast.success(message, {
@@ -57,8 +58,8 @@ const Profile = () => {
     setShow(true)
     setSelectId(id)
   }
-  const updatedCasos = Array.isArray(casos)
-    ? casos.map(caso => ({
+  const updatedCasos = Array.isArray(getProfesional.casos)
+    ? getProfesional.casos.map(caso => ({
       ...caso,
       fechaInforme: fechaEntrega(caso.fecha, caso.informe).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
     }))
@@ -87,17 +88,7 @@ const Profile = () => {
       await axios.put(ENDPOINT.data, { date, id }, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      const foundNna = casos.find((nna) => nna.id === id)
-      const updateNna = { ...foundNna, prorroga: date }
-      const updatedData = getProfesional.casos.map((nna) => {
-        if (nna.id === id) {
-          return updateNna
-        } else {
-          return nna
-        }
-      })
       const mensaje = `fecha actualizada al 🆕 ${date} 📅`
-      updateCasos(updatedData)
       notify(mensaje)
       handleClose()
     } catch (error) {
@@ -111,10 +102,7 @@ const Profile = () => {
         data: { selectId },
         headers: { Authorization: `Bearer ${token}` }
       })
-      const foundNna = casos.find((nna) => nna.id === selectId)
-      const mensaje = `👋Adios ${foundNna.nombre}🖖`
-      const updatedData = casos.filter((nna) => nna.id !== selectId)
-      updateCasos(updatedData)
+      const mensaje = `👋Adios ${selectNna}🖖`
       setSelectId(null)
       notify(mensaje)
       handleCloseModal()
@@ -124,9 +112,10 @@ const Profile = () => {
     }
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = (id, nombre) => {
     handleShowModal()
     setSelectId(id)
+    setSelectNna(nombre)
   }
 
   return (
@@ -176,7 +165,7 @@ const Profile = () => {
               </div>
               : <p>no corresponde</p>}
             </td>
-            {getProfesional.rol ? <td><Button variant='danger' onClick={() => handleDelete(caso.id)}>X</Button></td> : <></>}
+            {getProfesional.rol ? <td><Button variant='danger' onClick={() => handleDelete(caso.id, caso.nombre)}>X</Button></td> : <></>}
           </tr>
         ))}
       </tbody>

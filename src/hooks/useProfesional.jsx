@@ -2,9 +2,11 @@ import { useState } from 'react'
 
 const useProfesional = () => {
   const [user, setUser] = useState(null)
-  const [casos, setCasos] = useState([])
   const [atrasos, setAtrasos] = useState([])
   const [pendientes, setPendientes] = useState([])
+  const [totalCasos, setTotalCasos] = useState(0)
+  const [atrasoTotal, setAtrasoTotal] = useState(0)
+  const [pendienteTotal, setPendienteTotal] = useState(0)
 
   const fechaEntrega = (fecha, quarters) => {
     const date = new Date(fecha)
@@ -15,13 +17,13 @@ const useProfesional = () => {
   }
 
   const filterAtrasos = () => {
+    const casos = user.casos
     const updatedCasos = Array.isArray(casos)
-      ? casos.map(caso => ({
+      ? user.casos.map(caso => ({
         ...caso,
         fechaInformePendiente: fechaEntrega(caso.fecha, caso.informe)
       }))
       : []
-
     const today = new Date()
     const todayMonth = today.getMonth()
 
@@ -29,7 +31,8 @@ const useProfesional = () => {
       const { fechaInformePendiente } = caso
       return fechaInformePendiente < today
     })
-    const updatedFormatFechas = filteredCasos.map(caso => ({
+    const enOrdenAtrasos = filteredCasos.sort((a, b) => a.fechaInformePendiente - b.fechaInformePendiente)
+    const updatedFormatFechas = enOrdenAtrasos.map(caso => ({
       ...caso,
       fechaInformePendiente: (caso.fechaInformePendiente).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
     }))
@@ -39,11 +42,19 @@ const useProfesional = () => {
       const { fechaInformePendiente } = caso
       return fechaInformePendiente > today && fechaInformePendiente.getMonth() === todayMonth
     })
-    const updatedFormatMes = filteredCasosMes.map(caso => ({
+    const enOrdenPendientes = filteredCasosMes.sort((a, b) => a.fechaInformePendiente - b.fechaInformePendiente)
+
+    const updatedFormatMes = enOrdenPendientes.map(caso => ({
       ...caso,
       fechaInformePendiente: (caso.fechaInformePendiente).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
     }))
     setPendientes(updatedFormatMes)
+    if (totalCasos === 0) {
+      setTotalCasos(updatedCasos.length)
+    } else if (atrasoTotal === 0) {
+      setAtrasoTotal(atrasos.length)
+      setPendienteTotal(pendientes.length)
+    }
   }
 
   const setFiltradosPendientes = (tratante) => {
@@ -65,7 +76,7 @@ const useProfesional = () => {
       setAtrasos(filtro)
     }
   }
-  const setData = (casos) => {
+  const orderDataByName = (casos) => {
     const sortedData = casos.sort((a, b) => {
       const nameA = a.nombre.toLowerCase()
       const nameB = b.nombre.toLowerCase()
@@ -77,11 +88,10 @@ const useProfesional = () => {
         return 0
       }
     })
-    setCasos(sortedData)
+    return sortedData
   }
 
   const setProfesional = (profesional) => setUser(profesional)
-  const updateCasos = (casos) => setCasos(casos)
   return {
     getProfesional: user,
     setProfesional,
@@ -91,9 +101,10 @@ const useProfesional = () => {
     getPendientes: pendientes,
     atrasosFiltrados: setFiltradosAtrasos,
     pendientesFiltrados: setFiltradosPendientes,
-    setData,
-    casos,
-    updateCasos
+    orderDataByName,
+    totalCasos,
+    atrasoTotal,
+    pendienteTotal
   }
 }
 

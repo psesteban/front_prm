@@ -13,7 +13,7 @@ import './Profile.css'
 
 const Admin = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, setData, casos } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, atrasoTotal, pendienteTotal } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
   const accesScript = window.sessionStorage.getItem('accestoken')
   const urlScript = 'https://script.googleusercontent.com/a/macros/fundaciondem.cl/echo?user_content_key=fjJEnL4ocgIBV2Nok0vZ-V0OrYbJGNUZATxEVEDVbqfS-N5EUJGfmAzntRu_HGqQHP86m0olRNv4JsKbDaAQd1_9p8ka0Ev4OJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMi80zadyHLKB8BUNxsF9uTx1DmfU2jIlLFc8vL5kKEi0diVVRNvSu1fqNSIG1RtzAq7ANmImlOXb2ob3eWUknuIL8g6WjjyYM0dSkUUczY1IxIXPMCaQP89DL6zkhAw5XgKH5FOXaJf2agQEneoX2wQ&lib=MhBx1Tl4j65lsWnDPs1lRTqTnL97XiEFy'
@@ -25,6 +25,7 @@ const Admin = () => {
   const [select, setSelect] = useState('')
   const [show, setShow] = useState(false)
   const [selectId, setSelectId] = useState(null)
+  const [selectNna, setSelectNna] = useState(null)
 
   // configuración del modal
   const handleClose = () => setShow(false)
@@ -40,6 +41,7 @@ const Admin = () => {
   }
   const quitarFiltro = () => {
     setFilter(false)
+    filterAtrasos()
   }
 
   // mensaje felicidades al clickear termino de informe
@@ -56,27 +58,21 @@ const Admin = () => {
 
   const getProfesionalData = async () => {
     setIsLoading(true)
-    try {
-      const result = await axios.get(ENDPOINT.admin, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      const resultado = result.data
-      const { casos } = resultado
-      await setProfesional(resultado)
-      await setData(casos)
-      window.sessionStorage.setItem('CASOS', JSON.stringify(resultado))
-    } catch (error) {
+    await axios.get(ENDPOINT.admin, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((result) => {
+      setProfesional(result.data)
+      setIsLoading(false)
+    }).catch((error) => {
       console.error(error)
       window.sessionStorage.removeItem('token')
-      window.sessionStorage.removeItem('CASOS')
       setProfesional(null)
       navigate('/')
-    } finally {
-      setIsLoading(false)
     }
+    )
   }
 
-  const putData = async (id, nombre) => await axios.put(ENDPOINT.admin, { rol: 3, id, nombre }, {
+  const putData = async (id) => await axios.put(ENDPOINT.admin, { rol: 3, id }, {
     headers: { Authorization: `Bearer ${token}` }
   })
 
@@ -84,29 +80,20 @@ const Admin = () => {
     .then((result) => console.log(result))
     .catch((error) => console.log(error))
 
-  const okButton = () => {
-    const foundNna = casos.find((nna) => nna.id === selectId)
-    const number = parseInt(foundNna.informe) + 1
-    const updateNna = { ...foundNna, informe: number }
-    const updatedData = casos.map((nna) => {
-      if (nna.id === selectId) {
-        return updateNna
-      } else {
-        return nna
+  const okButton = async () => {
+    await putData(selectId).then((result) => {
+      if (result.data === true) {
+        notify(selectNna)
+        setSelectId(null)
+        setSelectNna(null)
+        getProfesionalData()
       }
     })
-    setProfesional(updatedData)
-    putData(selectId, foundNna.nombre).then(
-      (result) => {
-        console.log(result)
-        notify(result.data)
-        setSelectId(null)
-        handleClose()
-      }
-    ).catch((error) => console.error(error)).finally(() => { getProfesionalData() })
+    handleClose()
   }
-  const handleClick = async (id) => {
+  const handleClick = async (id, nombre) => {
     setSelectId(id)
+    setSelectNna(nombre)
     handleShow()
   }
 
@@ -122,31 +109,32 @@ const Admin = () => {
 
   useEffect(() => {
     if (getProfesional && !isLoading) {
-      const profesionales = getProfesional && Array.isArray(getProfesional.casos)
+      filterAtrasos()
+      const casos = getProfesional.casos
+      const profesionales = getProfesional && Array.isArray(casos)
         ? [...new Set(casos.map(caso => caso.profesional))]
         : []
       setDuplas(profesionales)
-      filterAtrasos()
-      percentWork()
     }
   }, [isLoading])
 
-  const percentWork = () => {
+  const percentWork = async () => {
     if (filter) {
-      const totalCasos = 25
       const totalAtrasos = getAtrasos.length
-      const descuento = totalCasos - (totalAtrasos)
-      const porcentaje = (descuento * 100 / totalCasos)
+      const totalPendientes = getPendientes.length
+      const terminados = 25 - (totalAtrasos) - (totalPendientes * 0.5)
+      const porcentaje = (terminados * 100 / 25)
       setLogro(porcentaje)
     } else {
-      filterAtrasos()
-      const totalCasos = casos.length
-      const totalAtrasos = getAtrasos.length
-      const descuento = totalCasos - (totalAtrasos)
-      const porcentaje = (descuento * 100 / totalCasos)
+      const total = totalCasos
+      console.log(totalCasos)
+      const terminados = total - atrasoTotal - (pendienteTotal * 0.5)
+      console.log(atrasoTotal)
+      const porcentaje = (terminados * 100 / totalCasos)
       setLogro(porcentaje)
     }
   }
+
   useEffect(() => {
     percentWork()
   }, [filter])
@@ -192,7 +180,7 @@ const Admin = () => {
                   <ListGroup.Item key={pendiente.id}>
                     {pendiente.nombre} {pendiente.estado
                       ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id)}>{pendiente.fechaInformePendiente}</Button>}{' '}
+                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>}{' '}
                     <Stack direction='horizontal' gap={2}>
                       <h6> I. psicológico {pendiente.ps
                         ? <Badge bg='success'>✔️</Badge>
@@ -216,7 +204,7 @@ const Admin = () => {
                   <ListGroup.Item key={atrasado.id}>
                     {atrasado.nombre} {atrasado.estado
                       ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id)}>{atrasado.fechaInformePendiente}</Button>}{' '}
+                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}</Button>}{' '}
                     <Stack direction='horizontal' gap={2}>
                       <h6> I. psicológico {atrasado.ps
                         ? <Badge bg='success'>✔️</Badge>
