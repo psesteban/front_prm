@@ -78,7 +78,7 @@ const Navigation = () => {
                 aria-hidden='true'
               />
               Entrando...🔐
-              </Button>
+            </Button>
             : <Button onClick={() => loadGoogleScript()}>📧Ingresar</Button>}
         </>
       )

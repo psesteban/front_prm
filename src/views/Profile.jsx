@@ -3,7 +3,7 @@ import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button, Modal, Dropdown } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Modal, Dropdown, Spinner } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -17,7 +17,6 @@ const Profile = () => {
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [nombre, setNombre] = useState({ nombre: 'profesional', rol: 'profesional', dupla: 'colega' })
-  const [logrados, setLogrados] = useState(0)
   const [logro, setLogro] = useState(100)
   const [plan, setPlan] = useState(false)
   const [win, setWin] = useState(false)
@@ -88,6 +87,7 @@ const Profile = () => {
       })
       const resultado = result.data
       await setProfesional(resultado)
+      console.log(resultado)
       return 'data cargada'
     } catch (error) {
       console.error(error)
@@ -109,14 +109,6 @@ const Profile = () => {
     getProfesionalData()
   }
 
-  const actualiza = () => {
-    filterAtrasos()
-    const countNnaTrue = getProfesional.casos.reduce((count, nna) => {
-      return nna.estado === true ? count + 1 : count
-    }, 0)
-    setLogrados(countNnaTrue)
-  }
-
   useEffect(() => {
     percentWork()
     if (logro < 50) setPlan(true)
@@ -124,7 +116,7 @@ const Profile = () => {
     if (logro > 90) {
       setWin(true)
     } else setWin(false)
-  }, [logrados])
+  }, [filterAtrasos])
 
   const handleClick = async (id, nombre) => {
     chosenOne(id, nombre)
@@ -147,14 +139,14 @@ const Profile = () => {
 
   useEffect(() => {
     if (getProfesional && !isLoading) {
-      actualiza()
+      filterAtrasos()
     }
   }, [isLoading])
 
   const percentWork = () => {
     const totalAtrasos = getAtrasos.length
     const totalPendientes = getPendientes.length
-    const descuento = 25 - (totalAtrasos) - (totalPendientes * 0.5) + logrados
+    const descuento = 25 - (totalAtrasos) - (totalPendientes * 0.5)
     const porcentaje = (descuento * 100 / 25)
     setLogro(porcentaje)
   }
