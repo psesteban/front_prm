@@ -19,27 +19,26 @@ const Navigation = () => {
   const loadGoogleScript = async () => {
     const provider = new GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/script.external_request')
-    provider.addScope('https://www.googleapis.com/auth/script.processes')
-
-    try {
-      setLoad(true)
-      const result = await signInWithPopup(auth, provider)
-      const authCredential = GoogleAuthProvider.credential(result)
-      const accessToken = authCredential.idToken._tokenResponse.oauthAccessToken
-      const verified = authCredential.idToken.user.emailVerified
-      const emailDeFundacion = authCredential.idToken.user.email
-      sessionStorage.setItem('accestoken', accessToken)
+    setLoad(true)
+    signInWithPopup(auth, provider).then((result) => {
+      // const authCredential = GoogleAuthProvider.credential(result)
+      // const accessToken = authCredential.idToken._tokenResponse.oauthAccessToken
+      const verified = result.user.emailVerified
+      const emailDeFundacion = result.user.email
+      console.log(emailDeFundacion)
+      // sessionStorage.setItem('accestoken', accessToken)
       if (!verified) {
         setLoad(false)
         return console.error('usuario, email o contraseña no es correcto')
       }
       setGoouser({ email: emailDeFundacion })
       handleEntry(goouser)
-    } catch (error) {
+    }).catch((error) => {
       console.error('Error durante ingreso con gmail:', error)
       setLoad(false)
-    }
+    })
   }
+
   const handleEntry = async (usuario) => await axios.post(ENDPOINT.google, usuario)
     .then(({ data }) => {
       const rol = data.rol
@@ -79,7 +78,7 @@ const Navigation = () => {
                 aria-hidden='true'
               />
               Entrando...🔐
-            </Button>
+              </Button>
             : <Button onClick={() => loadGoogleScript()}>📧Ingresar</Button>}
         </>
       )

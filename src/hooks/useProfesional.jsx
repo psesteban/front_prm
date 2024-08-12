@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import PizZip from 'pizzip'
+import Docxtemplater from 'docxtemplater'
 
 const useProfesional = () => {
   const [user, setUser] = useState(null)
@@ -7,6 +9,316 @@ const useProfesional = () => {
   const [totalCasos, setTotalCasos] = useState(0)
   const [atrasoTotal, setAtrasoTotal] = useState(0)
   const [pendienteTotal, setPendienteTotal] = useState(0)
+  const [dataNna, setDataNna] = useState(null)
+
+  const calcularEdad = (fechaNacimiento) => {
+    const fechaNacimientoObj = new Date(fechaNacimiento)
+    const hoy = new Date()
+    // Calcular la diferencia en milisegundos
+    const diferenciaEnMS = hoy - fechaNacimientoObj
+    // Convertir la diferencia a años (aproximado)
+    const edadEnAnos = Math.floor(diferenciaEnMS / (1000 * 60 * 60 * 24 * 365.25))
+    const edad = `${edadEnAnos} años`
+    return edad
+  }
+  const permanencia = (ingreso) => {
+    const fechaIngreso = new Date(ingreso)
+    const hoy = new Date()
+
+    const yearDiff = hoy.getFullYear() - fechaIngreso.getFullYear()
+    const monthDiff = hoy.getMonth() - fechaIngreso.getMonth()
+
+    // Calcular los meses totales considerando años y meses.
+    const meses = yearDiff * 12 + monthDiff
+
+    const tiempo = `${meses} meses`
+    return tiempo
+  }
+  const calculaEgreso = (fechaIngreso) => {
+    const fecha = new Date(fechaIngreso)
+    // Obtener los componentes individuales de la fecha
+    const dia = fecha.getDate()
+    const mes = fecha.getMonth() + 1
+    const year = fecha.getFullYear() + 1
+    const fechaChilena = `${dia}-${mes}-${year}`
+    return fechaChilena
+  }
+  const generateWordDocument = (tipo, rol, nombre, dupla) => {
+    const nna = dataNna[0]
+    const nombrePropio = nna.nombre
+    const separado = nombrePropio.split(' ')
+    const apellidoMaterno = separado.pop()
+    const apellidoPaterno = separado.pop()
+    const nombres = separado.join(' ')
+    const ingreso = new Date(nna.ingreso).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+    const fechaNacimiento = new Date(nna.nac).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+    const edadNna = calcularEdad(nna.nac)
+    const egreso = calculaEgreso(nna.ingreso)
+    let tratante = 'psicologa'
+    let ts = 'trabajadora social'
+    if (rol === 1) {
+      tratante = nombre
+      ts = dupla
+    } else if (rol === 2) {
+      tratante = dupla
+      ts = nombre
+    } else {
+      console.log(`Ingreso de asesor: ${tratante} PS, ${ts} TS`)
+    }
+    if (tipo === 1) {
+      fetch('/templates/PII_Diag.docx')
+        .then(response => response.arrayBuffer())
+        .then(content => {
+          const zip = new PizZip(content)
+          const doc = new Docxtemplater().loadZip(zip)
+          const vencimiento = fechaEntrega(nna.ingreso, 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+          const context = {
+            el_nombre: nombres,
+            el_apellido_p: apellidoPaterno,
+            el_apellido_m: apellidoMaterno,
+            f_PII: ingreso,
+            ft_PII: vencimiento,
+            f_nac: fechaNacimiento,
+            edad: edadNna,
+            sexo: nna.gen,
+            nombre_ad: nna.responsable,
+            fam: nna.parentesco,
+            motiv: nna.motivo,
+            f_egreso: egreso,
+            f_ingreso: ingreso,
+            n_psico: tratante,
+            n_ts: ts
+          }
+
+          doc.setData(context)
+
+          try {
+            doc.render()
+          } catch (error) {
+            console.error('Error al generar el documento:', error)
+            return
+          }
+
+          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          const filename = `PII_Diag_${nna.nombre}.docx`
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(out)
+          link.download = filename
+          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        })
+    }
+    if (tipo === 2) {
+      fetch('/templates/PII.docx')
+        .then(response => response.arrayBuffer())
+        .then(content => {
+          const zip = new PizZip(content)
+          const doc = new Docxtemplater().loadZip(zip)
+          const vencimiento = fechaEntrega(nna.ingreso, nna.numero).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+          const context = {
+            el_nombre: nombres,
+            el_apellido_p: apellidoPaterno,
+            el_apellido_m: apellidoMaterno,
+            f_PII: ingreso,
+            ft_PII: vencimiento,
+            f_nac: fechaNacimiento,
+            edad: edadNna,
+            sexo: nna.gen,
+            nombre_ad: nna.responsable,
+            fam: nna.parentesco,
+            motiv: nna.motivo,
+            f_egreso: egreso,
+            f_ingreso: ingreso,
+            n_psico: tratante,
+            n_ts: ts
+          }
+
+          doc.setData(context)
+
+          try {
+            doc.render()
+          } catch (error) {
+            console.error('Error al generar el documento:', error)
+            return
+          }
+
+          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          const filename = `PII_${nna.nombre}.docx`
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(out)
+          link.download = filename
+          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        })
+    }
+    if (tipo === 3) {
+      fetch('/templates/IPD.docx')
+        .then(response => response.arrayBuffer())
+        .then(content => {
+          const zip = new PizZip(content)
+          const doc = new Docxtemplater().loadZip(zip)
+          const edadAdulto = calcularEdad(nna.nacimiento)
+
+          const context = {
+            el_nombre: nombres,
+            el_apellido_p: apellidoPaterno,
+            el_apellido_m: apellidoMaterno,
+            f_ingreso: ingreso,
+            f_nac: fechaNacimiento,
+            edad: edadNna,
+            sexo: nna.gen,
+            nombre_ad: nna.responsable,
+            fam: nna.parentesco,
+            motiv: nna.motivo,
+            Rit: nna.rit,
+            Rut: nna.rut,
+            nacion: nna.nacion,
+            fam_edad: edadAdulto,
+            fam_Rut: nna.run,
+            fam_oc: nna.labores,
+            domicilio: nna.domicilio,
+            comuna: nna.comuna,
+            fam_fono: nna.fono,
+            curad: 'La niñez se Defiende',
+            fam_nac: new Date(nna.nacimiento).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+            curso: nna.curso,
+            est_ed: nna.ed,
+            n_psico: tratante,
+            n_ts: ts
+          }
+
+          doc.setData(context)
+
+          try {
+            doc.render()
+          } catch (error) {
+            console.error('Error al generar el documento:', error)
+            return
+          }
+
+          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          const filename = `IPD_${nna.nombre}.docx`
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(out)
+          link.download = filename
+          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        })
+    }
+    if (tipo === 4) {
+      fetch('/templates/IA.docx')
+        .then(response => response.arrayBuffer())
+        .then(content => {
+          const zip = new PizZip(content)
+          const doc = new Docxtemplater().loadZip(zip)
+          const ultimoPii = fechaEntrega(nna.ingreso, nna.numero).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+          const ipdPii = fechaEntrega(nna.ingreso, 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+          const tiempoPRM = permanencia(nna.ingreso)
+          const edadAdulto = calcularEdad(nna.nacimiento)
+          const context = {
+            el_nombre: nombres,
+            el_apellido_p: apellidoPaterno,
+            el_apellido_m: apellidoMaterno,
+            f_PII: ultimoPii,
+            f_PII_d: ipdPii,
+            f_ingreso: ingreso,
+            f_nac: fechaNacimiento,
+            edad: edadNna,
+            sexo: nna.gen,
+            nombre_ad: nna.responsable,
+            fam: nna.parentesco,
+            motiv: nna.motivo,
+            Rit: nna.rit,
+            Rut: nna.rut,
+            nacion: nna.nacion,
+            fam_edad: edadAdulto,
+            fam_Rut: nna.run,
+            fam_oc: nna.labores,
+            domicilio: nna.domicilio,
+            comuna: nna.comuna,
+            fam_fono: nna.fono,
+            curad: 'La niñez se Defiende',
+            fam_nac: new Date(nna.nacimiento).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+            curso: nna.curso,
+            tiempo_prm: tiempoPRM,
+            est_ed: nna.ed,
+            est_salud: nna.salud,
+            n_psico: tratante,
+            n_ts: ts
+          }
+
+          doc.setData(context)
+
+          try {
+            doc.render()
+          } catch (error) {
+            console.error('Error al generar el documento:', error)
+            return
+          }
+
+          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          const filename = `IA_${nna.nombre}.docx`
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(out)
+          link.download = filename
+          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        })
+    }
+    if (tipo === 5) {
+      fetch('/templates/Prorroga.docx')
+        .then(response => response.arrayBuffer())
+        .then(content => {
+          const zip = new PizZip(content)
+          const doc = new Docxtemplater().loadZip(zip)
+          const vencimiento = fechaEntrega(nna.ingreso, nna.numero).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+          const context = {
+            el_nombre: nombres,
+            el_apellido_p: apellidoPaterno,
+            el_apellido_m: apellidoMaterno,
+            f_PII: ingreso,
+            ft_PII: vencimiento,
+            f_nac: fechaNacimiento,
+            edad: edadNna,
+            sexo: nna.gen,
+            nombre_ad: nna.responsable,
+            fam: nna.parentesco,
+            motiv: nna.motivo,
+            f_egreso: egreso,
+            f_ingreso: ingreso,
+            n_psico: tratante,
+            n_ts: ts
+          }
+
+          doc.setData(context)
+
+          try {
+            doc.render()
+          } catch (error) {
+            console.error('Error al generar el documento:', error)
+            return
+          }
+
+          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+          const filename = `Prorroga_${nna.nombre}.docx`
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(out)
+          link.download = filename
+          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        })
+    }
+  }
 
   const fechaEntrega = (fecha, quarters) => {
     const date = new Date(fecha)
@@ -104,7 +416,10 @@ const useProfesional = () => {
     orderDataByName,
     totalCasos,
     atrasoTotal,
-    pendienteTotal
+    pendienteTotal,
+    generaWord: generateWordDocument,
+    dataNna,
+    setDataNna
   }
 }
 

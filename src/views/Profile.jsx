@@ -3,7 +3,7 @@ import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button, Modal } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Modal, Dropdown } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -13,10 +13,10 @@ import './Profile.css'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setDataNna, generaWord } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
-  const [nombre, setNombre] = useState({ nombre: 'profesional', rol: 'profesional' })
+  const [nombre, setNombre] = useState({ nombre: 'profesional', rol: 'profesional', dupla: 'colega' })
   const [logrados, setLogrados] = useState(0)
   const [logro, setLogro] = useState(100)
   const [plan, setPlan] = useState(false)
@@ -24,10 +24,49 @@ const Profile = () => {
   const [show, setShow] = useState(false)
   const [selectId, setSelectId] = useState(null)
   const [selectNna, setSelectNna] = useState(null)
+  const [showformato, setShowFormato] = useState(false)
+  const [isLoadData, setIsLoadData] = useState(false)
 
   // configuración del modal
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
+  const handleCloseFormato = () => {
+    setDataNna(null)
+    setSelectId(null)
+    setSelectNna(null)
+    setShowFormato(false)
+  }
+  const handleShowFormato = () => setShowFormato(true)
+
+  const chosenOne = (id, nombre) => {
+    setSelectId(id)
+    setSelectNna(nombre)
+  }
+  const getDataForI = async (id) => {
+    const params = { id }
+    await axios.get(ENDPOINT.data, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setIsLoadData(false)
+        console.log(result.data)
+        setDataNna(result.data)
+      })
+      .catch((error) => {
+        setIsLoadData(false)
+        console.log(error)
+      })
+  }
+  const handleClickFormato = async (id, nombre) => {
+    try {
+      chosenOne(id, nombre)
+      setIsLoadData(true)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      getDataForI(id)
+      handleShowFormato()
+    }
+  }
+  const handleClickDescarga = async (tipo) => await generaWord(tipo, nombre.rol, nombre.nombre, nombre.dupla)
 
   // mensaje felicidades al clickear termino de informe
   const notify = (idNna) => toast.success(`felicidades ${nombre.nombre} terminaste tu parte del informe de ${idNna} 💝`, {
@@ -88,8 +127,7 @@ const Profile = () => {
   }, [logrados])
 
   const handleClick = async (id, nombre) => {
-    setSelectId(id)
-    setSelectNna(nombre)
+    chosenOne(id, nombre)
     handleShow()
   }
 
@@ -101,7 +139,7 @@ const Profile = () => {
     if (!getProfesional || typeof getProfesional === 'undefined' || isEmptyObject(getProfesional)) {
       getProfesionalData().then((result) => {
         const { profesional } = getProfesional
-        setNombre({ nombre: profesional.nombre, rol: profesional.idRol })
+        setNombre({ nombre: profesional.nombre, rol: profesional.idRol, dupla: profesional.dupla })
         console.log(result)
       })
     }
@@ -160,7 +198,7 @@ const Profile = () => {
               <ListGroup variant='flush'>
                 {getPendientes.map((pendiente) => (
                   <ListGroup.Item key={pendiente.id}>
-                    {pendiente.nombre} - {pendiente.estado
+                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre)}>{pendiente.nombre}</Button> - {pendiente.estado
                       ? <Button variant='success'>👍✔️</Button>
                       : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>}{' '}
                   </ListGroup.Item>
@@ -174,7 +212,7 @@ const Profile = () => {
               <ListGroup variant='flush'>
                 {getAtrasos.map((atrasado) => (
                   <ListGroup.Item key={atrasado.id}>
-                    {atrasado.nombre} - {atrasado.estado
+                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre)}>{atrasado.nombre}</Button> - {atrasado.estado
                       ? <Button variant='success'>👍✔️</Button>
                       : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}⌛🔲</Button>}{' '}
                   </ListGroup.Item>
@@ -196,6 +234,37 @@ const Profile = () => {
             </Button>
             <Button variant='primary' onClick={okButton}>
               Terminado👍
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showformato} onHide={handleCloseFormato}>
+          <Modal.Header closeButton>
+            <Modal.Title>Formato de Documento de {selectNna}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>¿Que formato deseas?</Modal.Body>
+          <Modal.Footer>
+            {!isLoadData
+              ? <><Button variant='outline-primary' onClick={() => handleClickDescarga(1)}> El PII del Diagnóstico</Button>{' '}
+                <Button variant='outline-success' onClick={() => handleClickDescarga(2)}> Formato de PII Tratamiento</Button>
+                <Dropdown.Divider />
+                <Button variant='info' onClick={() => handleClickDescarga(3)}> Formato de IPD</Button>{' '}
+                <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
+                <Dropdown.Divider />
+                <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
+                </>
+              : <Button variant='primary' disabled>
+                <Spinner
+                  as='span'
+                  animation='border'
+                  size='sm'
+                  role='status'
+                  aria-hidden='true'
+                />
+                <span className='visually-hidden'>Loading...</span>
+                </Button>}
+            <Dropdown.Divider />
+            <Button variant='secondary' onClick={() => handleCloseFormato()}>
+              Ninguno
             </Button>
           </Modal.Footer>
         </Modal>

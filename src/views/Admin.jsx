@@ -3,7 +3,7 @@ import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button, Badge, Stack, Modal } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Badge, Stack, Modal, Spinner, Dropdown } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -13,17 +13,17 @@ import './Profile.css'
 
 const Admin = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, atrasoTotal, pendienteTotal } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, atrasoTotal, pendienteTotal, generaWord, setDataNna } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
-  const accesScript = window.sessionStorage.getItem('accestoken')
-  const urlScript = 'https://script.googleusercontent.com/a/macros/fundaciondem.cl/echo?user_content_key=fjJEnL4ocgIBV2Nok0vZ-V0OrYbJGNUZATxEVEDVbqfS-N5EUJGfmAzntRu_HGqQHP86m0olRNv4JsKbDaAQd1_9p8ka0Ev4OJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMi80zadyHLKB8BUNxsF9uTx1DmfU2jIlLFc8vL5kKEi0diVVRNvSu1fqNSIG1RtzAq7ANmImlOXb2ob3eWUknuIL8g6WjjyYM0dSkUUczY1IxIXPMCaQP89DL6zkhAw5XgKH5FOXaJf2agQEneoX2wQ&lib=MhBx1Tl4j65lsWnDPs1lRTqTnL97XiEFy'
 
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadData, setIsLoadData] = useState(false)
   const [logro, setLogro] = useState(100)
   const [duplas, setDuplas] = useState(['duplas'])
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
   const [show, setShow] = useState(false)
+  const [showformato, setShowFormato] = useState(false)
   const [selectId, setSelectId] = useState(null)
   const [selectNna, setSelectNna] = useState(null)
 
@@ -31,8 +31,17 @@ const Admin = () => {
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
+  const handleCloseFormato = () => {
+    setDataNna(null)
+    setSelectId(null)
+    setSelectNna(null)
+    setShowFormato(false)
+  }
+  const handleShowFormato = () => setShowFormato(true)
+
   const randomId = () => Math.random().toString(3)
 
+  // filtros de vista para cada dupla
   const filtro = (profesional) => {
     atrasosFiltrados(profesional)
     pendientesFiltrados(profesional)
@@ -75,10 +84,23 @@ const Admin = () => {
   const putData = async (id) => await axios.put(ENDPOINT.admin, { rol: 3, id }, {
     headers: { Authorization: `Bearer ${token}` }
   })
-
-  const postData = async () => await axios.post(urlScript, { logro })
-    .then((result) => console.log(result))
-    .catch((error) => console.log(error))
+  const chosenOne = (id, nombre) => {
+    setSelectId(id)
+    setSelectNna(nombre)
+  }
+  const getDataForI = async (id) => {
+    const params = { id }
+    await axios.get(ENDPOINT.data, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setIsLoadData(false)
+        console.log(result.data)
+        setDataNna(result.data)
+      })
+      .catch((error) => {
+        setIsLoadData(false)
+        console.log(error)
+      })
+  }
 
   const okButton = async () => {
     await putData(selectId).then((result) => {
@@ -92,10 +114,21 @@ const Admin = () => {
     handleClose()
   }
   const handleClick = async (id, nombre) => {
-    setSelectId(id)
-    setSelectNna(nombre)
+    chosenOne(id, nombre)
     handleShow()
   }
+  const handleClickFormato = async (id, nombre) => {
+    try {
+      chosenOne(id, nombre)
+      setIsLoadData(true)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      getDataForI(id)
+      handleShowFormato()
+    }
+  }
+  const handleClickDescarga = async (tipo) => await generaWord(tipo, 3, 'tratante', 'ts')
 
   useEffect(() => {
     // Función para verificar si un objeto está vacío
@@ -127,9 +160,7 @@ const Admin = () => {
       setLogro(porcentaje)
     } else {
       const total = totalCasos
-      console.log(totalCasos)
       const terminados = total - atrasoTotal - (pendienteTotal * 0.5)
-      console.log(atrasoTotal)
       const porcentaje = (terminados * 100 / totalCasos)
       setLogro(porcentaje)
     }
@@ -178,7 +209,7 @@ const Admin = () => {
               <ListGroup variant='flush'>
                 {getPendientes.map((pendiente) => (
                   <ListGroup.Item key={pendiente.id}>
-                    {pendiente.nombre} {pendiente.estado
+                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre)}>{pendiente.nombre}</Button> {pendiente.estado
                       ? <Button variant='success'>👍✔️</Button>
                       : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>}{' '}
                     <Stack direction='horizontal' gap={2}>
@@ -202,7 +233,7 @@ const Admin = () => {
               <ListGroup variant='flush'>
                 {getAtrasos.map((atrasado) => (
                   <ListGroup.Item key={atrasado.id}>
-                    {atrasado.nombre} {atrasado.estado
+                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre)}>{atrasado.nombre}</Button> {atrasado.estado
                       ? <Button variant='success'>👍✔️</Button>
                       : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}</Button>}{' '}
                     <Stack direction='horizontal' gap={2}>
@@ -222,7 +253,6 @@ const Admin = () => {
           </Card>
         </>
       )}
-      <Button variant='outline-warning' onClick={() => postData()}>Probar</Button>{' '}
       <>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
@@ -235,6 +265,37 @@ const Admin = () => {
             </Button>
             <Button variant='primary' onClick={okButton}>
               Enviado👍
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showformato} onHide={handleCloseFormato}>
+          <Modal.Header closeButton>
+            <Modal.Title>Formato de Documento de {selectNna}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>¿Que formato deseas?</Modal.Body>
+          <Modal.Footer>
+            {!isLoadData
+              ? <><Button variant='outline-primary' onClick={() => handleClickDescarga(1)}> El PII del Diagnóstico</Button>{' '}
+                <Button variant='outline-success' onClick={() => handleClickDescarga(2)}> Formato de PII Tratamiento</Button>
+                <Dropdown.Divider />
+                <Button variant='info' onClick={() => handleClickDescarga(3)}> Formato de IPD</Button>{' '}
+                <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
+                <Dropdown.Divider />
+                <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
+                </>
+              : <Button variant='primary' disabled>
+                <Spinner
+                  as='span'
+                  animation='border'
+                  size='sm'
+                  role='status'
+                  aria-hidden='true'
+                />
+                <span className='visually-hidden'>Loading...</span>
+                </Button>}
+            <Dropdown.Divider />
+            <Button variant='secondary' onClick={() => handleCloseFormato()}>
+              Ninguno
             </Button>
           </Modal.Footer>
         </Modal>
