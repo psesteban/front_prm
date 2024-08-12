@@ -54,6 +54,7 @@ const useProfesional = () => {
     const fechaNacimiento = new Date(nna.nac).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
     const edadNna = calcularEdad(nna.nac)
     const egreso = calculaEgreso(nna.ingreso)
+    const hoy = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
     let tratante = 'psicologa'
     let ts = 'trabajadora social'
     if (rol === 1) {
@@ -167,6 +168,7 @@ const useProfesional = () => {
             el_nombre: nombres,
             el_apellido_p: apellidoPaterno,
             el_apellido_m: apellidoMaterno,
+            fecha_hoy: hoy,
             f_ingreso: ingreso,
             f_nac: fechaNacimiento,
             edad: edadNna,
@@ -225,6 +227,7 @@ const useProfesional = () => {
             el_nombre: nombres,
             el_apellido_p: apellidoPaterno,
             el_apellido_m: apellidoMaterno,
+            fecha_hoy: hoy,
             f_PII: ultimoPii,
             f_PII_d: ipdPii,
             f_ingreso: ingreso,
