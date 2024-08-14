@@ -93,7 +93,6 @@ const Admin = () => {
     await axios.get(ENDPOINT.data, { params, headers: { Authorization: `Bearer ${token}` } })
       .then((result) => {
         setIsLoadData(false)
-        console.log(result.data)
         setDataNna(result.data)
       })
       .catch((error) => {
@@ -160,7 +159,9 @@ const Admin = () => {
       setLogro(porcentaje)
     } else {
       const total = totalCasos
-      const terminados = total - atrasoTotal - (pendienteTotal * 0.5)
+      const atrasados = getAtrasos.length
+      const pendientes = getPendientes.length
+      const terminados = total - atrasados - (pendientes * 0.5)
       const porcentaje = (terminados * 100 / totalCasos)
       setLogro(porcentaje)
     }

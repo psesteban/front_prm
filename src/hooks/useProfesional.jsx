@@ -7,8 +7,6 @@ const useProfesional = () => {
   const [atrasos, setAtrasos] = useState([])
   const [pendientes, setPendientes] = useState([])
   const [totalCasos, setTotalCasos] = useState(0)
-  const [atrasoTotal, setAtrasoTotal] = useState(0)
-  const [pendienteTotal, setPendienteTotal] = useState(0)
   const [dataNna, setDataNna] = useState(null)
 
   const calcularEdad = (fechaNacimiento) => {
@@ -366,9 +364,6 @@ const useProfesional = () => {
     setPendientes(updatedFormatMes)
     if (totalCasos === 0) {
       setTotalCasos(updatedCasos.length)
-    } else if (atrasoTotal === 0) {
-      setAtrasoTotal(atrasos.length)
-      setPendienteTotal(pendientes.length)
     }
   }
 
@@ -418,8 +413,6 @@ const useProfesional = () => {
     pendientesFiltrados: setFiltradosPendientes,
     orderDataByName,
     totalCasos,
-    atrasoTotal,
-    pendienteTotal,
     generaWord: generateWordDocument,
     dataNna,
     setDataNna

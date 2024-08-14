@@ -47,7 +47,7 @@ const Navigation = () => {
     })
       .catch(({ response: { data } }) => {
         console.error(data.error)
-        window.alert(`no se encontro el usuario ${data.error} 🙁.`)
+        window.alert(`no se encontro el usuario o ${data.error} 🙁.`)
         setLoad(false)
       })
   }
@@ -74,7 +74,7 @@ const Navigation = () => {
                 aria-hidden='true'
               />
               Entrando...🔐
-              </Button>
+            </Button>
             : <Button onClick={() => handleEntry()}>📧Ingresar</Button>}
         </>
       )
