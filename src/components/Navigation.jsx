@@ -32,7 +32,7 @@ const Navigation = () => {
         return console.error('usuario, email o contraseña no es correcto')
       }
       setGoouser({ email: emailDeFundacion })
-      handleEntry(goouser)
+      if (goouser) handleEntry(goouser)
     }).catch((error) => {
       console.error('Error durante ingreso con gmail:', error)
       setLoad(false)
@@ -78,7 +78,7 @@ const Navigation = () => {
                 aria-hidden='true'
               />
               Entrando...🔐
-            </Button>
+              </Button>
             : <Button onClick={() => loadGoogleScript()}>📧Ingresar</Button>}
         </>
       )
