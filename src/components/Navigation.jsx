@@ -13,34 +13,26 @@ import Logo from '../assets/logo.svg' // Assuming logo is an SVG
 const Navigation = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional } = useContext(Context)
-  const [goouser, setGoouser] = useState(null)
   const [load, setLoad] = useState(false)
 
   const loadGoogleScript = async () => {
     const provider = new GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/script.external_request')
     setLoad(true)
-    signInWithPopup(auth, provider).then((result) => {
+    await signInWithPopup(auth, provider).then((result) => {
       // const authCredential = GoogleAuthProvider.credential(result)
       // const accessToken = authCredential.idToken._tokenResponse.oauthAccessToken
       const verified = result.user.emailVerified
       const emailDeFundacion = result.user.email
-      console.log(emailDeFundacion)
       // sessionStorage.setItem('accestoken', accessToken)
       if (!verified) {
         setLoad(false)
         return console.error('usuario, email o contraseña no es correcto')
-      }
-      setGoouser({ email: emailDeFundacion })
-      if (goouser) handleEntry(goouser)
-    }).catch((error) => {
-      console.error('Error durante ingreso con gmail:', error)
-      setLoad(false)
-    })
-  }
-
-  const handleEntry = async (usuario) => await axios.post(ENDPOINT.google, usuario)
-    .then(({ data }) => {
+      } else return emailDeFundacion
+    }).then(async (usuario) => {
+      const email = { email: usuario }
+      return await axios.post(ENDPOINT.google, email)
+    }).then(({ data }) => {
       const rol = data.rol
       const token = data.token
       sessionStorage.setItem('token', token)
@@ -53,11 +45,15 @@ const Navigation = () => {
         navigate('/perfil')
       }
     })
-    .catch(({ response: { data } }) => {
-      console.error(data.error)
-      window.alert(`no se encontro el usuario ${data.error} 🙁.`)
-      setLoad(false)
-    })
+      .catch(({ response: { data } }) => {
+        console.error(data.error)
+        window.alert(`no se encontro el usuario ${data.error} 🙁.`)
+        setLoad(false)
+      })
+  }
+
+  const handleEntry = async () => await loadGoogleScript()
+
   const logout = () => {
     setProfesional(null)
     window.sessionStorage.removeItem('token')
@@ -79,7 +75,7 @@ const Navigation = () => {
               />
               Entrando...🔐
               </Button>
-            : <Button onClick={() => loadGoogleScript()}>📧Ingresar</Button>}
+            : <Button onClick={() => handleEntry()}>📧Ingresar</Button>}
         </>
       )
     }
