@@ -14,6 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "accounting": "^0.4.1",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "docxtemplater": "^3.49.2",

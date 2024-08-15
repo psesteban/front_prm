@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
 import { Container, Card, ListGroup, Button, Badge, Stack, Modal, Spinner, Dropdown, Form, InputGroup, Col, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import accounting from 'accounting'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -16,8 +17,8 @@ const Admin = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, generaWord, setDataNna } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
-  const { register, handleSubmit, formState: { errors } } = useForm()
-
+  const { register, handleSubmit } = useForm()
+  const [litleCharge, setLitleCharge] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadData, setIsLoadData] = useState(false)
   const [logro, setLogro] = useState(100)
@@ -39,11 +40,29 @@ const Admin = () => {
     if (modificar) setModificar(false)
     else setModificar(true)
   }
-  const onSubmitAdulto = async (data) => {
+  const onSubmitAdulto = async (datos) => {
+    const id = Math.floor(Math.random() * 900 + 2)
+    const responsable = datos.nombre
+    const nacimiento = datos.nacimiento
+    const rutParteA = parseInt(datos.rut)
+    const rutDigito = datos.rutDigito
+    const run = accounting.formatNumber(rutParteA, 0, '.') + '-' + rutDigito
+    const fono = datos.fono
+    const labores = datos.labor
+    const tsId = datos.ts
+    const data = {
+      id,
+      run,
+      responsable,
+      nacimiento,
+      fono,
+      labores,
+      tsId
+    }
     await axios.put(ENDPOINT.adulto, { data }, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then(async (result) => {
-      console.log(result)
+    }).then((r) => {
+      notifyIngreso(responsable)
       if (addNna) {
         handleCloseAdult()
         handleAddNNa(2)
@@ -63,17 +82,59 @@ const Admin = () => {
       handleShowChange()
     }
   }
-  const onSubmitNna = async (data) => {
+  const onSubmitNna = async (datos) => {
+    console.log(datos)
+    const id = datos.id
+    const nombre = datos.nombre
+    const nacimiento = datos.nacimiento
+    const rutParteA = parseInt(datos.rut)
+    const rutDigito = datos.rutDigito
+    const rut = accounting.formatNumber(rutParteA, 0, '.') + '-' + rutDigito
+    const genero = datos.genero
+    const nacion = datos.nacion
+    const domicilio = datos.domicilio
+    const comuna = datos.comuna
+    const tratante = datos.tratante
+    const causa = datos.causa
+    const juzgado = datos.juzgado
+    const ingreso = datos.ingreso
+    const adulto = datos.adulto
+    const motivo = datos.motivo
+    const salud = datos.salud
+    const educacion = datos.educacion
+    const curso = datos.curso
+    const parentesco = datos.curso
+    const data = {
+      id,
+      rut,
+      nombre,
+      nacimiento,
+      genero,
+      nacion,
+      domicilio,
+      comuna,
+      tratante,
+      causa,
+      juzgado,
+      ingreso,
+      adulto,
+      parentesco,
+      curso,
+      motivo,
+      salud,
+      educacion
+    }
     await axios.put(ENDPOINT.nna, { data }, {
       headers: { Authorization: `Bearer ${token}` }
+    }).then((r) => {
+      notifyIngreso(nombre)
+      handleCloseNna()
     })
   }
 
-  const onSubmitChange = async (data) => {
-    await axios.put(ENDPOINT.lista, { data }, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-  }
+  const onSubmitChange = async ({ id, parentesco, responsable }) => await axios.put(ENDPOINT.lista, { id, parentesco, responsable }, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).then((r) => handleCloseChange())
 
   // configuración del modal
   const handleClose = () => setShow(false)
@@ -117,7 +178,16 @@ const Admin = () => {
     progress: undefined,
     theme: 'light'
   })
-
+  const notifyIngreso = (nombre) => toast.success(` ${nombre} ha ingresado con éxito`, {
+    position: 'top-left',
+    autoClose: 3000,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'dark'
+  })
   const getProfesionalData = async () => {
     setIsLoading(true)
     await axios.get(ENDPOINT.admin, {
@@ -183,6 +253,7 @@ const Admin = () => {
   const handleClickDescarga = async (tipo) => await generaWord(tipo, 3, 'tratante', 'ts')
 
   const handleAddNNa = async (etapa) => {
+    setLitleCharge(true)
     if (etapa === 1) {
       setAddNna(true)
       handleShowAdult()
@@ -217,7 +288,7 @@ const Admin = () => {
         }))
         const juzgado = array.arrayJuzgado.map((lista) => ({
           id: lista.id,
-          nombre: lista.nacion
+          nombre: lista.juzgado
         }))
         const motivo = array.arrayMotivo.map((lista) => ({
           id: lista.id,
@@ -242,11 +313,15 @@ const Admin = () => {
         const adultos = array.arrayAdultos.map((lista) => ({
           id: lista.id,
           nombre: lista.responsable
-        }))
+        })).sort((a, b) => {
+          return a.nombre.localeCompare(b.nombre)
+        })
         const nna = array.arrayNna.map((lista) => ({
           id: lista.id,
           nombre: lista.nombre
-        }))
+        })).sort((a, b) => {
+          return a.nombre.localeCompare(b.nombre)
+        })
         const arraysForList = {
           gen,
           nacion,
@@ -263,6 +338,7 @@ const Admin = () => {
           nna
         }
         setListas(arraysForList)
+        setLitleCharge(false)
       }).catch((error) => console.log(error))
   }
 
@@ -326,6 +402,15 @@ const Admin = () => {
             <Card.Title><Button variant='outline-warning' onClick={() => handleModificar()}>Modificar Datos</Button></Card.Title>
             {modificar
               ? <Card.Body><Button variant='outline-info' onClick={() => handleAddNNa(1)}>Agregar NNJ</Button>
+                {litleCharge
+                  ? <Spinner
+                      as='span'
+                      animation='grow'
+                      size='sm'
+                      role='status'
+                      aria-hidden='true'
+                    />
+                  : '👍'}
                 <Button variant='outline-info' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Button>
               </Card.Body>
               : <h3>👩‍💼👩‍👦</h3>}
@@ -413,6 +498,7 @@ const Admin = () => {
                     required
                     type='text'
                     placeholder='Nombre y apellido'
+                    {...register('nombre')}
                   />
                   <Form.Control.Feedback>Va bien</Form.Control.Feedback>
                 </Form.Group>
@@ -422,6 +508,7 @@ const Admin = () => {
                     required
                     type='number'
                     placeholder='RUT sin puntos '
+                    {...register('rut')}
                   />
                   <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
                 </Form.Group>
@@ -431,6 +518,7 @@ const Admin = () => {
                     required
                     type='text'
                     placeholder='D'
+                    {...register('rutDigito')}
                   />
                   <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
                 </Form.Group>
@@ -443,6 +531,7 @@ const Admin = () => {
                       placeholder='Fono (solo números)'
                       aria-describedby='inputGroupPrepend'
                       required
+                      {...register('fono')}
                     />
                     <Form.Control.Feedback type='invalid'>
                       Favor ingresa un número válido
@@ -453,21 +542,21 @@ const Admin = () => {
               <Row className='mb-3'>
                 <Form.Group as={Col} md='6' controlId='validationCustom03'>
                   <Form.Label>Labores</Form.Label>
-                  <Form.Control type='text' placeholder='ocupación' required />
+                  <Form.Control {...register('labor')} type='text' placeholder='ocupación' required />
                   <Form.Control.Feedback type='invalid'>
                     Elige una ocupación
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='validationCustom04'>
                   <Form.Label>Fecha de nacimiento</Form.Label>
-                  <Form.Control type='date' placeholder='01' required />
+                  <Form.Control {...register('nacimiento')} type='date' placeholder='01' required />
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='validationCustom05'>
                   <Form.Label>TS a cargo</Form.Label>
-                  <Form.Select aria-label='Default select example'>
+                  <Form.Select {...register('ts')} aria-label='Default select example'>
                     <option>Elige a la profesional</option>
                     {listas.ts.map((e) => (
                       <option key={e.id} value={e.id}>{e.nombre}</option>))}
@@ -530,7 +619,7 @@ const Admin = () => {
                 </Form.Group>
                 <Form.Group as={Col} md='1' controlId='basicGenero'>
                   <Form.Label>Género</Form.Label>
-                  <Form.Select {...register('Genero')} aria-label='Default select example'>
+                  <Form.Select {...register('genero')} aria-label='Default select example'>
                     <option>G</option>
                     {listas.gen.map((e) => (
                       <option key={e.id} value={e.id}>{e.nombre}</option>))}
@@ -701,6 +790,16 @@ const Admin = () => {
                     Ingresa una opción
                   </Form.Control.Feedback>
                 </Form.Group>
+                <Form.Group as={Col} md='2' controlId='basicDomicilio'>
+                  <Form.Label>Código Senainfo/MN</Form.Label>
+                  <Form.Control
+                    type='number' placeholder='ej. 1968470' required
+                    {...register('id')}
+                  />
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa domicilio actual
+                  </Form.Control.Feedback>
+                </Form.Group>
               </Row>
               <Form.Group className='mb-3'>
                 <Form.Check
@@ -718,9 +817,9 @@ const Admin = () => {
               <Modal.Title>Cambiar adulto</Modal.Title>
             </Modal.Header>
             <Form onSubmit={handleSubmit(onSubmitChange)}>
-              <Form.Group as={Col} md='2' controlId='adultoCambio'>
+              <Form.Group as={Col} md='7' controlId='adultoCambio'>
                 <Form.Label>Adulto Responsable</Form.Label>
-                <Form.Select {...register('adulto')} aria-label='Default select example'>
+                <Form.Select {...register('responsable')} aria-label='Default select example'>
                   <option>Elige a la persona a cargo</option>
                   {listas.adultos.map((e) => (
                     <option key={e.id} value={e.id}>{e.nombre}</option>))}
@@ -729,9 +828,9 @@ const Admin = () => {
                   Ingresa una opción
                 </Form.Control.Feedback>
               </Form.Group>
-              <Form.Group as={Col} md='2' controlId='nnaSuCargo'>
+              <Form.Group as={Col} md='7' controlId='nnaSuCargo'>
                 <Form.Label>NNJ a su cargo</Form.Label>
-                <Form.Select {...register('nna')} aria-label='Default select example'>
+                <Form.Select {...register('id')} aria-label='Default select example'>
                   <option>NNJ</option>
                   {listas.nna.map((e) => (
                     <option key={e.id} value={e.id}>{e.nombre}</option>))}
@@ -740,7 +839,7 @@ const Admin = () => {
                   Ingresa una opción
                 </Form.Control.Feedback>
               </Form.Group>
-              <Form.Group as={Col} md='2' controlId='parentescoAdulto'>
+              <Form.Group as={Col} md='5' controlId='parentescoAdulto'>
                 <Form.Label>Parentesco</Form.Label>
                 <Form.Select {...register('parentesco')} aria-label='Default select example'>
                   <option>Es su:</option>
