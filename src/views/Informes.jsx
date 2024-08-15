@@ -21,6 +21,7 @@ const Profile = () => {
   const [selectId, setSelectId] = useState(null)
   const [selectNna, setSelectNna] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [orderByName, setOrderByName] = useState(false)
 
   const notify = (message) => toast.success(message, {
     position: 'top-right',
@@ -64,6 +65,21 @@ const Profile = () => {
       fechaInforme: fechaEntrega(caso.fecha, caso.informe).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
     }))
     : []
+
+  const casos = orderByName
+    ? updatedCasos.sort((a, b) => {
+      const nameA = a.nombre.toLowerCase()
+      const nameB = b.nombre.toLowerCase()
+      if (nameA < nameB) {
+        return -1
+      } else if (nameA > nameB) {
+        return 1
+      } else {
+        return 0
+      }
+    })
+    : updatedCasos
+
   const createDate = (date) => new Date(date)
   const formatedDate = (date) => {
     const fecha = createDate(date)
@@ -101,11 +117,16 @@ const Profile = () => {
       await axios.delete(ENDPOINT.data, {
         data: { selectId },
         headers: { Authorization: `Bearer ${token}` }
-      })
-      const mensaje = `👋Adios ${selectNna}🖖`
-      setSelectId(null)
-      notify(mensaje)
-      handleCloseModal()
+      }).then((result) => {
+        const exit = result.data
+        if (exit === true) {
+          const mensaje = `👋Adios ${selectNna}🖖`
+          setSelectId(null)
+          notify(mensaje)
+          handleCloseModal()
+        }
+      }
+      )
     } catch (error) {
       console.error('Error al eliminar NNA:', error)
       notifyError('error al eliminar de la base de datos, ver consola')
@@ -117,73 +138,79 @@ const Profile = () => {
     setSelectId(id)
     setSelectNna(nombre)
   }
+  const orderDataByName = () => setOrderByName(true)
+  const orderDataByDefault = () => setOrderByName(false)
 
   return (
-    <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>⌛ 📄📤</th>
-          <th>Prórroga 🗓️</th>
-          {getProfesional.rol ? <th>❌</th> : <></>}
-        </tr>
-      </thead>
-      <tbody>
-        {updatedCasos.map((caso) => (
-          <tr key={caso.id}>
-            <td>{caso.nombre}</td>
-            <td>{caso.fechaInforme}</td>
-            <td className={fechaPrevista(caso.prorroga) ? 'normal' : 'marcada'}>{((hoyMs - createDate(caso.fecha).getTime()) >= millisecondsPerYear)
-              ? <div>{(createDate(caso.prorroga) >= hoy) ? <div>👀</div> : <div>revisar‼️</div>} {getProfesional.rol
-                ? <div>
-                  <p>{formatedDate(caso.prorroga)}</p>
-                  <Button variant='primary' onClick={() => handleShow(caso.id)}>
-                    🆕📅
-                  </Button>
-                  <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>Ingresa la nueva fecha</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <Form>
-                        <Row>
-                          <Col>
-                            <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
-                          </Col>
-                        </Row>
-                      </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant='secondary' onClick={handleClose}>
-                        Cancelar
-                      </Button>
-                      <Button onClick={() => putDataDate(selectId)}>Guardar cambios</Button>
-                    </Modal.Footer>
-                  </Modal>
-                </div>
-                : <div> {formatedDate(caso.prorroga)} 🔚</div>}
-              </div>
-              : <p>no corresponde</p>}
-            </td>
-            {getProfesional.rol ? <td><Button variant='danger' onClick={() => handleDelete(caso.id, caso.nombre)}>X</Button></td> : <></>}
+    <>
+      <Button variant='outline-info' onClick={() => orderDataByName()}>Ordenar por nombre de NNA</Button>{' '}
+      <Button variant='outline-info' onClick={() => orderDataByDefault()}>Orden previo</Button>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>⌛ 📄📤</th>
+            <th>Prórroga 🗓️</th>
+            {getProfesional.rol ? <th>❌</th> : <></>}
           </tr>
-        ))}
-      </tbody>
-      <Modal show={showModal} onHide={() => { handleCloseModal() }}>
-        <Modal.Header closeButton>
-          <Modal.Title>Eliminar de la base de datos</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Es seguro que esta listo el Egreso?</Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={() => { handleCloseModal() }}>
-            Aún no🫢
-          </Button>
-          <Button variant='primary' onClick={() => { deleteNna() }}>
-            Si👍
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Table>
+        </thead>
+        <tbody>
+          {casos.map((caso) => (
+            <tr key={caso.id}>
+              <td>{caso.nombre}</td>
+              <td>{caso.fechaInforme}</td>
+              <td className={fechaPrevista(caso.prorroga) ? 'normal' : 'marcada'}>{((hoyMs - createDate(caso.fecha).getTime()) >= millisecondsPerYear)
+                ? <div>{(createDate(caso.prorroga) >= hoy) ? <div>👀</div> : <div>revisar‼️</div>} {getProfesional.rol
+                  ? <div>
+                    <p>{formatedDate(caso.prorroga)}</p>
+                    <Button variant='primary' onClick={() => handleShow(caso.id)}>
+                      🆕📅
+                    </Button>
+                    <Modal show={show} onHide={handleClose}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Ingresa la nueva fecha</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
+                          <Row>
+                            <Col>
+                              <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+                            </Col>
+                          </Row>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant='secondary' onClick={handleClose}>
+                          Cancelar
+                        </Button>
+                        <Button onClick={() => putDataDate(selectId)}>Guardar cambios</Button>
+                      </Modal.Footer>
+                    </Modal>
+                    </div>
+                  : <div> {formatedDate(caso.prorroga)} 🔚</div>}
+                  </div>
+                : <p>no corresponde</p>}
+              </td>
+              {getProfesional.rol ? <td><Button variant='danger' onClick={() => handleDelete(caso.id, caso.nombre)}>X</Button></td> : <></>}
+            </tr>
+          ))}
+        </tbody>
+        <Modal show={showModal} onHide={() => { handleCloseModal() }}>
+          <Modal.Header closeButton>
+            <Modal.Title>Eliminar de la base de datos</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Es seguro que esta listo el Egreso?</Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={() => { handleCloseModal() }}>
+              Aún no🫢
+            </Button>
+            <Button variant='primary' onClick={() => { deleteNna() }}>
+              Si👍
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Table>
+    </>
   )
 }
 

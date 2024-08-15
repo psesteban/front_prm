@@ -386,20 +386,6 @@ const useProfesional = () => {
       setAtrasos(filtro)
     }
   }
-  const orderDataByName = (casos) => {
-    const sortedData = casos.sort((a, b) => {
-      const nameA = a.nombre.toLowerCase()
-      const nameB = b.nombre.toLowerCase()
-      if (nameA < nameB) {
-        return -1
-      } else if (nameA > nameB) {
-        return 1
-      } else {
-        return 0
-      }
-    })
-    return sortedData
-  }
 
   const setProfesional = (profesional) => setUser(profesional)
   return {
@@ -411,7 +397,6 @@ const useProfesional = () => {
     getPendientes: pendientes,
     atrasosFiltrados: setFiltradosAtrasos,
     pendientesFiltrados: setFiltradosPendientes,
-    orderDataByName,
     totalCasos,
     generaWord: generateWordDocument,
     dataNna,

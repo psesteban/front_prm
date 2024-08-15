@@ -3,7 +3,8 @@ import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button, Badge, Stack, Modal, Spinner, Dropdown } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Badge, Stack, Modal, Spinner, Dropdown, Form, InputGroup, Col, Row } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -13,8 +14,9 @@ import './Profile.css'
 
 const Admin = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, atrasoTotal, pendienteTotal, generaWord, setDataNna } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, generaWord, setDataNna } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
+  const { register, handleSubmit, formState: { errors } } = useForm()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadData, setIsLoadData] = useState(false)
@@ -24,13 +26,64 @@ const Admin = () => {
   const [select, setSelect] = useState('')
   const [show, setShow] = useState(false)
   const [showformato, setShowFormato] = useState(false)
+  const [showAdult, setShowAdult] = useState(false)
+  const [showNna, setShowNna] = useState(false)
+  const [showNewAd, setShowNewAd] = useState(false)
   const [selectId, setSelectId] = useState(null)
   const [selectNna, setSelectNna] = useState(null)
+  const [modificar, setModificar] = useState(false)
+  const [listas, setListas] = useState(null)
+  const [addNna, setAddNna] = useState(true)
+  // Menu de modificación
+  const handleModificar = () => {
+    if (modificar) setModificar(false)
+    else setModificar(true)
+  }
+  const onSubmitAdulto = async (data) => {
+    await axios.put(ENDPOINT.adulto, { data }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(async (result) => {
+      console.log(result)
+      if (addNna) {
+        handleCloseAdult()
+        handleAddNNa(2)
+      } else {
+        handleCloseAdult()
+        handleAddNNa(4)
+      }
+    })
+  }
+
+  const handleAdult = () => {
+    if (addNna) {
+      handleCloseAdult()
+      handleAddNNa(2)
+    } else {
+      handleCloseAdult()
+      handleShowChange()
+    }
+  }
+  const onSubmitNna = async (data) => {
+    await axios.put(ENDPOINT.nna, { data }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+  }
+
+  const onSubmitChange = async (data) => {
+    await axios.put(ENDPOINT.lista, { data }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+  }
 
   // configuración del modal
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
-
+  const handleCloseAdult = () => setShowAdult(false)
+  const handleShowAdult = () => setShowAdult(true)
+  const handleShowNna = () => setShowNna(true)
+  const handleCloseNna = () => setShowNna(false)
+  const handleShowChange = () => setShowNewAd(true)
+  const handleCloseChange = () => setShowNewAd(false)
   const handleCloseFormato = () => {
     setDataNna(null)
     setSelectId(null)
@@ -129,6 +182,90 @@ const Admin = () => {
   }
   const handleClickDescarga = async (tipo) => await generaWord(tipo, 3, 'tratante', 'ts')
 
+  const handleAddNNa = async (etapa) => {
+    if (etapa === 1) {
+      setAddNna(true)
+      handleShowAdult()
+    } else if (etapa === 2) handleShowNna()
+    else if (etapa === 3) {
+      setAddNna(false)
+      handleShowAdult()
+    } else if (etapa === 4) handleShowChange()
+
+    await axios.get(ENDPOINT.lista, { headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        const array = result.data
+        const gen = array.arrayGen.map((lista) => ({
+          id: lista.id,
+          nombre: lista.gen
+        }))
+        const nacion = array.arrayNacionalidad.map((lista) => ({
+          id: lista.id,
+          nombre: lista.nacion
+        }))
+        const curso = array.arrayCurso.map((lista) => ({
+          id: lista.id,
+          nombre: lista.curso
+        }))
+        const comuna = array.arrayComuna.map((lista) => ({
+          id: lista.id,
+          nombre: lista.comuna
+        }))
+        const parentesco = array.arrayParentesco.map((lista) => ({
+          id: lista.id,
+          nombre: lista.parentesco
+        }))
+        const juzgado = array.arrayJuzgado.map((lista) => ({
+          id: lista.id,
+          nombre: lista.nacion
+        }))
+        const motivo = array.arrayMotivo.map((lista) => ({
+          id: lista.id,
+          nombre: lista.motivo
+        }))
+        const educacional = array.arrayEducacional.map((lista) => ({
+          id: lista.id,
+          nombre: lista.ed
+        }))
+        const salud = array.arraySalud.map((lista) => ({
+          id: lista.id,
+          nombre: lista.salud
+        }))
+        const tratantes = array.arrayTratantes.map((lista) => ({
+          id: lista.id,
+          nombre: lista.nombre
+        }))
+        const ts = array.arrayTs.map((lista) => ({
+          id: lista.id,
+          nombre: lista.nombre
+        }))
+        const adultos = array.arrayAdultos.map((lista) => ({
+          id: lista.id,
+          nombre: lista.responsable
+        }))
+        const nna = array.arrayNna.map((lista) => ({
+          id: lista.id,
+          nombre: lista.nombre
+        }))
+        const arraysForList = {
+          gen,
+          nacion,
+          curso,
+          comuna,
+          parentesco,
+          juzgado,
+          motivo,
+          educacional,
+          salud,
+          tratantes,
+          ts,
+          adultos,
+          nna
+        }
+        setListas(arraysForList)
+      }).catch((error) => console.log(error))
+  }
+
   useEffect(() => {
     // Función para verificar si un objeto está vacío
     const isEmptyObject = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object
@@ -185,6 +322,14 @@ const Admin = () => {
       )}
       {!isLoading && getProfesional && (
         <>
+          <Card className='editar'>
+            <Card.Title><Button variant='outline-warning' onClick={() => handleModificar()}>Modificar Datos</Button></Card.Title>
+            {modificar
+              ? <Card.Body><Button variant='outline-info' onClick={() => handleAddNNa(1)}>Agregar NNJ</Button>
+                <Button variant='outline-info' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Button>
+              </Card.Body>
+              : <h3>👩‍💼👩‍👦</h3>}
+          </Card>
           <Card className='credencial'>
             <h1>
               Hola <span className='fw-bold'>{getProfesional.nombre}</span>
@@ -254,6 +399,362 @@ const Admin = () => {
           </Card>
         </>
       )}
+      {listas && (
+        <>
+          <Modal show={showAdult} onHide={handleCloseAdult} size='xl'>
+            <Modal.Header closeButton>
+              <Modal.Title> 'Nuevo Adulto Responsable'</Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={handleSubmit(onSubmitAdulto)}>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md='3' controlId='adultoResponsable'>
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
+                    required
+                    type='text'
+                    placeholder='Nombre y apellido'
+                  />
+                  <Form.Control.Feedback>Va bien</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='2' controlId='validationCustom02'>
+                  <Form.Label>Rut</Form.Label>
+                  <Form.Control
+                    required
+                    type='number'
+                    placeholder='RUT sin puntos '
+                  />
+                  <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='1' controlId='validationCustom02'>
+                  <Form.Label>Dígito</Form.Label>
+                  <Form.Control
+                    required
+                    type='text'
+                    placeholder='D'
+                  />
+                  <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='4' controlId='validationCustomUsername'>
+                  <Form.Label>Teléfono</Form.Label>
+                  <InputGroup hasValidation>
+                    <InputGroup.Text id='inputGroupPrepend'>📞</InputGroup.Text>
+                    <Form.Control
+                      type='number'
+                      placeholder='Fono (solo números)'
+                      aria-describedby='inputGroupPrepend'
+                      required
+                    />
+                    <Form.Control.Feedback type='invalid'>
+                      Favor ingresa un número válido
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+              </Row>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md='6' controlId='validationCustom03'>
+                  <Form.Label>Labores</Form.Label>
+                  <Form.Control type='text' placeholder='ocupación' required />
+                  <Form.Control.Feedback type='invalid'>
+                    Elige una ocupación
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='validationCustom04'>
+                  <Form.Label>Fecha de nacimiento</Form.Label>
+                  <Form.Control type='date' placeholder='01' required />
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una fecha válida
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='validationCustom05'>
+                  <Form.Label>TS a cargo</Form.Label>
+                  <Form.Select aria-label='Default select example'>
+                    <option>Elige a la profesional</option>
+                    {listas.ts.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Row>
+              <Form.Group className='mb-3'>
+                <Form.Check
+                  required
+                  label='Confirmo que los datos están correctos'
+                  feedback='Estoy de acuerdo con enviar estos datos confidenciales'
+                  feedbackType='invalid'
+                />
+              </Form.Group>
+              <Button type='submit'>Ingresar nuevo Adulto Responsable</Button>
+              <p>------------------------ ó -----------------------</p>
+              <Dropdown />
+              <Button variant='outline-success' onClick={() => handleAdult()}> el Adulto de NNJ ya estaba ingresado</Button>
+            </Form>
+          </Modal>
+
+          <Modal show={showNna} onHide={handleCloseNna} size='xl'>
+            <Modal.Header closeButton>
+              <Modal.Title>'Agregar NNJ'</Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={handleSubmit(onSubmitNna)}>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md='5' controlId='formBasicName'>
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
+                    required
+                    type='text'
+                    placeholder='Nombre y ambos apellido'
+                    {...register('nombre')}
+                  />
+                  <Form.Control.Feedback>Va bien</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='2' controlId='basicRut'>
+                  <Form.Label>Rut</Form.Label>
+                  <Form.Control
+                    required
+                    type='number'
+                    placeholder='RUT sin puntos '
+                    {...register('rut')}
+                  />
+                  <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='1' controlId='basicDigito'>
+                  <Form.Label>Dígito</Form.Label>
+                  <Form.Control
+                    required
+                    type='text'
+                    placeholder='D'
+                    {...register('rutDigito')}
+                  />
+                  <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='1' controlId='basicGenero'>
+                  <Form.Label>Género</Form.Label>
+                  <Form.Select {...register('Genero')} aria-label='Default select example'>
+                    <option>G</option>
+                    {listas.gen.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='2' controlId='basicNacion'>
+                  <Form.Label>Nacionalidad</Form.Label>
+                  <Form.Select {...register('nacion')} aria-label='Default select example'>
+                    <option>Nacionalidad</option>
+                    {listas.nacion.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Row>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md='6' controlId='basicDomicilio'>
+                  <Form.Label>Domicilio</Form.Label>
+                  <Form.Control
+                    type='text' placeholder='Donde vive (dirección sin comuna)' required
+                    {...register('domicilio')}
+                  />
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa domicilio actual
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicComuna'>
+                  <Form.Label>Comuna</Form.Label>
+                  <Form.Select {...register('comuna')} aria-label='Default select example'>
+                    <option>Elige la Comuna</option>
+                    {listas.comuna.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicNacimiento'>
+                  <Form.Label>Fecha de nacimiento</Form.Label>
+                  <Form.Control
+                    type='date' placeholder='01' required
+                    {...register('nacimiento')}
+                  />
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una fecha válida
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicTratante'>
+                  <Form.Label>Tratante a cargo</Form.Label>
+                  <Form.Select {...register('tratante')} aria-label='Default select example'>
+                    <option>Elige a la profesional</option>
+                    {listas.tratantes.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='2' controlId='basicRit'>
+                  <Form.Label>Rit</Form.Label>
+                  <InputGroup hasValidation>
+                    <InputGroup.Text id='inputGroupPrepend'>👩‍⚖️</InputGroup.Text>
+                    <Form.Control
+                      type='text'
+                      placeholder='causa P/X'
+                      aria-describedby='inputGroupPrepend'
+                      required
+                      {...register('causa')}
+                    />
+                    <Form.Control.Feedback type='invalid'>
+                      Favor ingresa una causa
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicJuzgado'>
+                  <Form.Label>Juzgado</Form.Label>
+                  <Form.Select {...register('juzgado')} aria-label='Default select example'>
+                    <option>Tribunal</option>
+                    {listas.juzgado.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Row>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md='3' controlId='basicFechaIngreso'>
+                  <Form.Label>Fecha de Ingreso</Form.Label>
+                  <Form.Control
+                    type='date' placeholder='01' required
+                    {...register('ingreso')}
+                  />
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una fecha válida
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicMotivo'>
+                  <Form.Label>Motivo de Ingreso</Form.Label>
+                  <Form.Select {...register('motivo')} aria-label='Default select example'>
+                    <option>Principal por</option>
+                    {listas.motivo.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicAdultoResponsable'>
+                  <Form.Label>Adulto Responsable</Form.Label>
+                  <Form.Select {...register('adulto')} aria-label='Default select example'>
+                    <option>Elige a la persona a cargo</option>
+                    {listas.adultos.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='2' controlId='basicParentesco'>
+                  <Form.Label>Parentesco</Form.Label>
+                  <Form.Select {...register('parentesco')} aria-label='Default select example'>
+                    <option>Es su (del niño):</option>
+                    {listas.parentesco.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Row>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md='2' controlId='basicSalud'>
+                  <Form.Label>Centro de Salud</Form.Label>
+                  <Form.Select {...register('salud')} aria-label='Default select example'>
+                    <option>Centro principal:</option>
+                    {listas.salud.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicEstablecimiento'>
+                  <Form.Label>Establecimiento Educacional</Form.Label>
+                  <Form.Select {...register('educacion')} aria-label='Default select example'>
+                    <option>EE</option>
+                    {listas.educacional.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md='3' controlId='basicCurso'>
+                  <Form.Label>Curso</Form.Label>
+                  <Form.Select {...register('curso')} aria-label='Default select example'>
+                    <option>Cursa</option>
+                    {listas.curso.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    Ingresa una opción
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Row>
+              <Form.Group className='mb-3'>
+                <Form.Check
+                  required
+                  label='Confirmo que los datos están correctos'
+                  feedback='Estoy de acuerdo con enviar estos datos confidenciales'
+                  feedbackType='invalid'
+                />
+              </Form.Group>
+              <Button type='submit'>Ingresar nuevo NNJ</Button>
+            </Form>
+          </Modal>
+          <Modal show={showNewAd} onHide={handleCloseChange}>
+            <Modal.Header closeButton>
+              <Modal.Title>Cambiar adulto</Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={handleSubmit(onSubmitChange)}>
+              <Form.Group as={Col} md='2' controlId='adultoCambio'>
+                <Form.Label>Adulto Responsable</Form.Label>
+                <Form.Select {...register('adulto')} aria-label='Default select example'>
+                  <option>Elige a la persona a cargo</option>
+                  {listas.adultos.map((e) => (
+                    <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                </Form.Select>
+                <Form.Control.Feedback type='invalid'>
+                  Ingresa una opción
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} md='2' controlId='nnaSuCargo'>
+                <Form.Label>NNJ a su cargo</Form.Label>
+                <Form.Select {...register('nna')} aria-label='Default select example'>
+                  <option>NNJ</option>
+                  {listas.nna.map((e) => (
+                    <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                </Form.Select>
+                <Form.Control.Feedback type='invalid'>
+                  Ingresa una opción
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} md='2' controlId='parentescoAdulto'>
+                <Form.Label>Parentesco</Form.Label>
+                <Form.Select {...register('parentesco')} aria-label='Default select example'>
+                  <option>Es su:</option>
+                  {listas.parentesco.map((e) => (
+                    <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                </Form.Select>
+                <Form.Control.Feedback type='invalid'>
+                  Ingresa una opción
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Button type='submit'>Realizar el cambio</Button>
+            </Form>
+          </Modal>
+        </>)}
       <>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
@@ -283,7 +784,7 @@ const Admin = () => {
                 <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
                 <Dropdown.Divider />
                 <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
-                </>
+              </>
               : <Button variant='primary' disabled>
                 <Spinner
                   as='span'
@@ -293,7 +794,7 @@ const Admin = () => {
                   aria-hidden='true'
                 />
                 <span className='visually-hidden'>Loading...</span>
-                </Button>}
+              </Button>}
             <Dropdown.Divider />
             <Button variant='secondary' onClick={() => handleCloseFormato()}>
               Ninguno
