@@ -46,12 +46,11 @@ const Profile = () => {
     await axios.get(ENDPOINT.data, { params, headers: { Authorization: `Bearer ${token}` } })
       .then((result) => {
         setIsLoadData(false)
-        console.log(result.data)
         setDataNna(result.data)
       })
       .catch((error) => {
         setIsLoadData(false)
-        console.log(error)
+        console.error(error)
       })
   }
   const handleClickFormato = async (id, nombre) => {
@@ -87,8 +86,8 @@ const Profile = () => {
       })
       const resultado = result.data
       await setProfesional(resultado)
-      console.log(resultado)
-      return 'data cargada'
+      const { profesional } = resultado
+      return profesional
     } catch (error) {
       console.error(error)
       window.sessionStorage.removeItem('token')
@@ -130,9 +129,9 @@ const Profile = () => {
     // Verificar si getProfesional es null, undefined o un objeto vacío
     if (!getProfesional || typeof getProfesional === 'undefined' || isEmptyObject(getProfesional)) {
       getProfesionalData().then((result) => {
-        const { profesional } = getProfesional
-        setNombre({ nombre: profesional.nombre, rol: profesional.idRol, dupla: profesional.dupla })
-        console.log(result)
+        if (result) {
+          setNombre({ nombre: result.nombre, rol: result.idRol, dupla: result.dupla })
+        }
       })
     }
   }, [])
@@ -243,7 +242,7 @@ const Profile = () => {
                 <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
                 <Dropdown.Divider />
                 <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
-                </>
+              </>
               : <Button variant='primary' disabled>
                 <Spinner
                   as='span'
@@ -253,7 +252,7 @@ const Profile = () => {
                   aria-hidden='true'
                 />
                 <span className='visually-hidden'>Loading...</span>
-                </Button>}
+              </Button>}
             <Dropdown.Divider />
             <Button variant='secondary' onClick={() => handleCloseFormato()}>
               Ninguno
