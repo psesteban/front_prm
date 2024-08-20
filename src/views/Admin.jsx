@@ -412,7 +412,7 @@ const Admin = () => {
                     />
                   : '👍'}
                 <Button variant='outline-info' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Button>
-              </Card.Body>
+                </Card.Body>
               : <h3>👩‍💼👩‍👦</h3>}
           </Card>
           <Card className='credencial'>
@@ -426,13 +426,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-              </ListGroup>
+                </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-              </ListGroup>}
+                </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>
@@ -883,7 +883,7 @@ const Admin = () => {
                 <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
                 <Dropdown.Divider />
                 <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
-              </>
+                </>
               : <Button variant='primary' disabled>
                 <Spinner
                   as='span'
@@ -893,7 +893,7 @@ const Admin = () => {
                   aria-hidden='true'
                 />
                 <span className='visually-hidden'>Loading...</span>
-              </Button>}
+                </Button>}
             <Dropdown.Divider />
             <Button variant='secondary' onClick={() => handleCloseFormato()}>
               Ninguno
