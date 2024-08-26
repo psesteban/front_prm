@@ -8,6 +8,7 @@ const useProfesional = () => {
   const [pendientes, setPendientes] = useState([])
   const [totalCasos, setTotalCasos] = useState(0)
   const [dataNna, setDataNna] = useState(null)
+  const [duplas, setDuplas] = useState(['duplas'])
 
   const calcularEdad = (fechaNacimiento) => {
     const fechaNacimientoObj = new Date(fechaNacimiento)
@@ -400,7 +401,9 @@ const useProfesional = () => {
     totalCasos,
     generaWord: generateWordDocument,
     dataNna,
-    setDataNna
+    setDataNna,
+    duplas,
+    setDuplas
   }
 }
 

@@ -13,11 +13,10 @@ import './Profile.css'
 
 const Admin = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, handleClick, handleClickFormato, litleCharge, handleAddNNa } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, handleClick, handleClickFormato, litleCharge, handleAddNNa, duplas, setDuplas } = useContext(Context)
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
-  const [duplas, setDuplas] = useState(['duplas'])
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
   const [modificar, setModificar] = useState(false)
