@@ -5,6 +5,7 @@ export const ENDPOINT = {
   user: `${URLBASE}/usuario`,
   admin: `${URLBASE}/admin`,
   data: `${URLBASE}/informes`,
+  formatos: `${URLBASE}/formatos`,
   google: `${URLBASE}/usergoogle`,
   lista: `${URLBASE}/tablas`,
   adulto: `${URLBASE}/adulto`,
