@@ -2,29 +2,25 @@ import axios from 'axios'
 import Context from '../contexts/context.js'
 import ModalAddNew from '../components/ModalAdmin.jsx'
 import { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button, Badge, Stack, Spinner } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button, Badge, Stack, Spinner, Dropdown, DropdownButton } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-toastify/dist/ReactToastify.css'
 import { Progress } from 'react-sweet-progress'
 import 'react-sweet-progress/lib/style.css'
 import './Profile.css'
+import useHandle from '../hooks/useHandle.jsx'
 
 const Admin = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, handleClick, handleClickFormato, litleCharge, handleAddNNa, duplas, setDuplas } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, litleCharge, duplas, setDuplas } = useContext(Context)
+  const { handleAddNNa, handleClick, handleClickFormato } = useHandle()
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
-  const [modificar, setModificar] = useState(false)
-  // Menu de modificación
-  const handleModificar = () => {
-    if (modificar) setModificar(false)
-    else setModificar(true)
-  }
 
   const randomId = () => Math.random().toString(3)
 
@@ -113,21 +109,23 @@ const Admin = () => {
       {!isLoading && getProfesional && (
         <>
           <Card className='editar'>
-            <Card.Title><Button variant='outline-warning' onClick={() => handleModificar()}>Modificar Datos</Button></Card.Title>
-            {modificar
-              ? <Card.Body><Button variant='outline-info' onClick={() => handleAddNNa(1)}>Agregar NNJ</Button>
-                {litleCharge
-                  ? <Spinner
-                      as='span'
-                      animation='grow'
-                      size='sm'
-                      role='status'
-                      aria-hidden='true'
-                    />
-                  : '👍'}
-                <Button variant='outline-info' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Button>
-                </Card.Body>
-              : <h3>👩‍💼👩‍👦</h3>}
+            <DropdownButton
+              id='dropdown-item-button' title={litleCharge
+                ? <Spinner
+                    as='span'
+                    animation='grow'
+                    size='sm'
+                    role='status'
+                    aria-hidden='true'
+                  />
+                : '👩‍👧‍👦'}
+            >
+              <Dropdown.ItemText>Modificar Datos 👇</Dropdown.ItemText>
+              <Dropdown.Item as='button' onClick={() => handleAddNNa(1)}>Agregar NNJ</Dropdown.Item>
+              <Dropdown.Item as='button' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Dropdown.Item>
+            </DropdownButton>
+            <Link className='btn m-1 btn-light' to='/analisis'>📝🤝</Link>
+
           </Card>
           <Card className='credencial'>
             <h1>
@@ -140,13 +138,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-                </ListGroup>
+              </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-                </ListGroup>}
+              </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>

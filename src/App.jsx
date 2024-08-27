@@ -8,6 +8,7 @@ import Home from './views/Home.jsx'
 import Profile from './views/Profile.jsx'
 import Informes from './views/Informes.jsx'
 import Admin from './views/Admin.jsx'
+import Analisis from './views/Analisis.jsx'
 
 const App = () => {
   const globalState = useProfesional()
@@ -22,6 +23,7 @@ const App = () => {
           <Route path='/perfil' element={<Profile />} />
           <Route path='/total' element={<Informes />} />
           <Route path='/admin' element={<Admin />} />
+          <Route path='/analisis' element={<Analisis />} />
         </Routes>
         <ToastContainer />
       </Context.Provider>

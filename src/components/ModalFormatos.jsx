@@ -1,3 +1,4 @@
+import useHandle from '../hooks/useHandle.jsx'
 import { Spinner, Button, Modal, Dropdown } from 'react-bootstrap'
 import { useContext } from 'react'
 import Context from '../contexts/context.js'
@@ -5,11 +6,14 @@ import Context from '../contexts/context.js'
 const ModalFormatos = () => {
   const {
     showFormato,
-    handleCloseFormato,
-    handleClickDescarga,
     selectNna,
     isLoadData
   } = useContext(Context)
+
+  const {
+    handleCloseFormato,
+    handleClickDescarga
+  } = useHandle()
 
   return (
     <Modal show={showFormato} onHide={handleCloseFormato}>

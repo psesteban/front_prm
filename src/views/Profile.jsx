@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Context from '../contexts/context.js'
 import ModalUsuario from '../components/ModalUsuarios.jsx'
+import useHandle from '../hooks/useHandle.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ENDPOINT } from '../config/constans.js'
@@ -13,7 +14,8 @@ import './Profile.css'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, handleClickFormato, setNombreProfesional, nombreProfesional, handleClick } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional } = useContext(Context)
+  const { handleClickFormato, handleClick } = useHandle()
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)

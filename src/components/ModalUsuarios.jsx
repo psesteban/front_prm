@@ -3,14 +3,19 @@ import Context from '../contexts/context.js'
 import ModalFormatos from './ModalFormatos.jsx'
 
 import { Button, Modal } from 'react-bootstrap'
+import useHandle from '../hooks/useHandle.jsx'
 
 const ModalUsuario = () => {
   const {
     show,
-    handleClose,
-    selectNna,
-    okButtonUsuario
+    selectNna
   } = useContext(Context)
+
+  const {
+    handleClose,
+    okButtonUsuario
+  } = useHandle()
+
   return (
     <>
       <Modal show={show} onHide={handleClose}>
