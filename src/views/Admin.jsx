@@ -1,9 +1,7 @@
-import axios from 'axios'
 import Context from '../contexts/context.js'
 import ModalAddNew from '../components/ModalAdmin.jsx'
 import { useContext, useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { ENDPOINT } from '../config/constans.js'
+import { Link } from 'react-router-dom'
 import { Container, Card, ListGroup, Button, Badge, Stack, Spinner, Dropdown, DropdownButton } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-toastify/dist/ReactToastify.css'
@@ -13,11 +11,8 @@ import './Profile.css'
 import useHandle from '../hooks/useHandle.jsx'
 
 const Admin = () => {
-  const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, litleCharge, duplas, setDuplas } = useContext(Context)
-  const { handleAddNNa, handleClick, handleClickFormato } = useHandle()
-  const token = window.sessionStorage.getItem('token')
-  const [isLoading, setIsLoading] = useState(false)
+  const { getProfesional, isLoading, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, litleCharge, duplas, setDuplas } = useContext(Context)
+  const { handleAddNNa, handleClick, handleClickFormato, getProfesionalData } = useHandle()
   const [logro, setLogro] = useState(100)
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
@@ -34,22 +29,6 @@ const Admin = () => {
   const quitarFiltro = () => {
     setFilter(false)
     filterAtrasos()
-  }
-
-  const getProfesionalData = async () => {
-    setIsLoading(true)
-    await axios.get(ENDPOINT.admin, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((result) => {
-      setProfesional(result.data)
-      setIsLoading(false)
-    }).catch((error) => {
-      console.error(error)
-      window.sessionStorage.removeItem('token')
-      setProfesional(null)
-      navigate('/')
-    }
-    )
   }
 
   useEffect(() => {

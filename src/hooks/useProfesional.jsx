@@ -9,6 +9,7 @@ const useProfesional = () => {
   const [totalCasos, setTotalCasos] = useState(0)
   const [dataNna, setDataNna] = useState(null)
   const [duplas, setDuplas] = useState(['duplas'])
+  const [isLoading, setIsLoading] = useState(false)
 
   // modal
   const [listas, setListas] = useState(null)
@@ -441,7 +442,9 @@ const useProfesional = () => {
     addNna,
     setAddNna,
     nombreProfesional,
-    setNombreProfesional
+    setNombreProfesional,
+    isLoading,
+    setIsLoading
   }
 }
 

@@ -1,13 +1,14 @@
-import { Container, ProgressBar, Accordion, Spinner, Card } from 'react-bootstrap'
+import { Container, ProgressBar, Accordion, Spinner, Card, Button } from 'react-bootstrap'
 import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
+import useHandle from '../hooks/useHandle.jsx'
+import ModalResumen from '../components/ModalResumen.jsx'
 import './Analisis.css'
-
 export const Analisis = () => {
-  const { getProfesional, duplas } = useContext(Context)
+  const { getProfesional, duplas, setSelectId } = useContext(Context)
   const [listas, setListas] = useState({})
   const casos = getProfesional.casos
-
+  const { handleShow } = useHandle()
   const agrupar = async () => {
     const grupos = {}
     await duplas.forEach(dupla => {
@@ -15,6 +16,11 @@ export const Analisis = () => {
       grupos[dupla].push(...casos.filter(caso => caso.profesional === dupla))
     })
     return grupos
+  }
+
+  const buttonAnalisis = (id) => {
+    setSelectId(id)
+    handleShow()
   }
 
   useEffect(() => {
@@ -34,13 +40,14 @@ export const Analisis = () => {
                 <Accordion.Item eventKey={index} key={index}>
                   <Accordion.Header>{dato.nombre}</Accordion.Header>
                   <Accordion.Body>
-                    {dato.resumen}
+                    {(dato.resumen) ? <div><h1>{dato.ultima}</h1><p>{dato.resumen}</p><h4>{dato.url}</h4></div> : <Button onClick={() => buttonAnalisis(dato.id)}>Registrar Análisis</Button>}
                   </Accordion.Body>
                 </Accordion.Item>
               ))}
             </Accordion>
           </Card>
         ))}
+        <ModalResumen />
       </Container>
     )
   } else {

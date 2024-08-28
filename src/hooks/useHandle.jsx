@@ -4,8 +4,12 @@ import useNotify from './useNotify.jsx'
 import axios from 'axios'
 import accounting from 'accounting'
 import { ENDPOINT } from '../config/constans.js'
+import { useNavigate } from 'react-router-dom'
 
 const useHandle = () => {
+  const navigate = useNavigate()
+  const token = window.sessionStorage.getItem('token')
+
   const {
     setShow,
     setShowFormato,
@@ -24,7 +28,9 @@ const useHandle = () => {
     selectNna,
     setListas,
     getProfesional,
-    nombreProfesional
+    setProfesional,
+    nombreProfesional,
+    setIsLoading
   } = useContext(Context)
 
   // configuración del modal
@@ -92,8 +98,6 @@ const useHandle = () => {
 
   const { notify, notifyIngreso } = useNotify()
 
-  const token = window.sessionStorage.getItem('token')
-
   const onSubmitAdulto = async (datos) => {
     const id = Math.floor(Math.random() * 900 + 2)
     const responsable = datos.nombre
@@ -116,6 +120,13 @@ const useHandle = () => {
     putAdulto(data)
   }
 
+  const onSubmitAnalisis = async (datos) => {
+    const id = selectId
+    const resumen = datos.resumen
+    const url = datos.url
+    const date = new Date()
+    postAnalisis(id, date, resumen, url)
+  }
   const onSubmitNna = async (datos) => {
     const id = datos.id
     const nombre = datos.nombre
@@ -170,6 +181,7 @@ const useHandle = () => {
         notify(selectNna, getProfesional.nombre, 'admin')
         setSelectId(null)
         setSelectNna(null)
+        getProfesionalData()
       }
     })
     handleClose()
@@ -200,6 +212,15 @@ const useHandle = () => {
     notifyIngreso(data.nombre)
     handleCloseNna()
   })
+  const postAnalisis = async (id, date, resumen, url) => await axios.post(ENDPOINT.resumen, { id, date, resumen, url }, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).then((r) => {
+    if (r.data) {
+      notifyIngreso('Análisis')
+      handleClose()
+    } else alert(`Error: ${r.data.message}`)
+  }).catch((error) => console.error(error))
+
   const getListas = async () => await axios.get(ENDPOINT.lista, { headers: { Authorization: `Bearer ${token}` } })
     .then((result) => {
       const array = result.data
@@ -296,6 +317,21 @@ const useHandle = () => {
         console.error(error)
       })
   }
+  const getProfesionalData = async () => {
+    setIsLoading(true)
+    await axios.get(ENDPOINT.admin, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((result) => {
+      setProfesional(result.data)
+      setIsLoading(false)
+    }).catch((error) => {
+      console.error(error)
+      window.sessionStorage.removeItem('token')
+      setProfesional(null)
+      navigate('/')
+    }
+    )
+  }
   return {
     handleClose,
     handleShow,
@@ -315,7 +351,10 @@ const useHandle = () => {
     okButtonUsuario,
     onSubmitChange,
     onSubmitNna,
-    okButton
+    okButton,
+    getProfesionalData,
+    postAnalisis,
+    onSubmitAnalisis
   }
 }
 

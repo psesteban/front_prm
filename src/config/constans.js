@@ -9,5 +9,6 @@ export const ENDPOINT = {
   google: `${URLBASE}/usergoogle`,
   lista: `${URLBASE}/tablas`,
   adulto: `${URLBASE}/adulto`,
-  nna: `${URLBASE}/nna`
+  nna: `${URLBASE}/nna`,
+  resumen: `${URLBASE}/resumen`
 }
