@@ -82,8 +82,10 @@ const Navigation = () => {
 
     return (
       <>
-        <Link to='/total' className='btn m-1 btn-light'>Total</Link>
-        <Link className='btn m-1 btn-light' to={getProfesional.rol ? '/admin' : '/perfil'}>Resumen</Link>
+        <Link to='/total' className='btn m-1 btn-light'>Prórrogas</Link>
+        {getProfesional.rol ? <Link className='btn m-1 btn-light' to='/analisis'>Análisis</Link> : <Link className='btn m-1 btn-light' to='/logros'>Logros</Link>}
+        {getProfesional.rol ? <Link className='btn m-1 btn-light' to='/editar'>Editar Datos</Link> : <Link className='btn m-1 btn-light' to='/casos'>Casos</Link>}
+        <Link className='btn m-1 btn-light' to={getProfesional.rol ? '/admin' : '/perfil'}>Informes</Link>
         <button onClick={logout} className='btn btn-danger'>Salir</button>
       </>
     )

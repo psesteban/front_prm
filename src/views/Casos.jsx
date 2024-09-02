@@ -9,12 +9,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-toastify/dist/ReactToastify.css'
 import { Progress } from 'react-sweet-progress'
 import 'react-sweet-progress/lib/style.css'
-import './Profile.css'
 
-const Profile = () => {
+const Casos = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional } = useContext(Context)
-  const { handleClickFormato } = useHandle()
+  const { handleClickFormato, handleClick } = useHandle()
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
@@ -117,7 +116,9 @@ const Profile = () => {
               <ListGroup variant='flush'>
                 {getPendientes.map((pendiente) => (
                   <ListGroup.Item key={pendiente.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 2)}>{pendiente.nombre}</Button>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 2)}>{pendiente.nombre}</Button> - {pendiente.estado
+                      ? <Button variant='success'>👍✔️</Button>
+                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>}{' '}
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -129,7 +130,9 @@ const Profile = () => {
               <ListGroup variant='flush'>
                 {getAtrasos.map((atrasado) => (
                   <ListGroup.Item key={atrasado.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 2)}>{atrasado.nombre}</Button>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 2)}>{atrasado.nombre}</Button> - {atrasado.estado
+                      ? <Button variant='success'>👍✔️</Button>
+                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}⌛🔲</Button>}{' '}
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -141,4 +144,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default Casos

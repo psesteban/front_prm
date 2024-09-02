@@ -10,5 +10,6 @@ export const ENDPOINT = {
   lista: `${URLBASE}/tablas`,
   adulto: `${URLBASE}/adulto`,
   nna: `${URLBASE}/nna`,
-  resumen: `${URLBASE}/resumen`
+  resumen: `${URLBASE}/resumen`,
+  dato: `${URLBASE}/dato`
 }

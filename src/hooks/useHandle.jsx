@@ -11,6 +11,8 @@ const useHandle = () => {
   const token = window.sessionStorage.getItem('token')
 
   const {
+    tipo,
+    setTipo,
     setShow,
     setShowFormato,
     setShowAdult,
@@ -29,8 +31,9 @@ const useHandle = () => {
     setListas,
     getProfesional,
     setProfesional,
-    nombreProfesional,
-    setIsLoading
+    setIsLoading,
+    setShowNnaChange,
+    setShowAdultChange
   } = useContext(Context)
 
   // configuración del modal
@@ -49,6 +52,17 @@ const useHandle = () => {
     setShowFormato(false)
   }
   const handleShowFormato = () => setShowFormato(true)
+
+  const handleCloseAdultChange = () => {
+    setShowAdultChange(false)
+    setSelectId(null)
+    setTipo(0)
+  }
+  const handleCloseNnaChange = () => {
+    setShowNnaChange(false)
+    setSelectId(null)
+    setTipo(0)
+  }
 
   const handleAdult = () => {
     if (addNna) {
@@ -117,7 +131,7 @@ const useHandle = () => {
       labores,
       tsId
     }
-    putAdulto(data)
+    postAdulto(data)
   }
 
   const onSubmitAnalisis = async (datos) => {
@@ -147,7 +161,7 @@ const useHandle = () => {
     const salud = datos.salud
     const educacion = datos.educacion
     const curso = datos.curso
-    const parentesco = datos.curso
+    const parentesco = datos.parentesco
     const data = {
       id,
       rut,
@@ -168,17 +182,46 @@ const useHandle = () => {
       salud,
       educacion
     }
-    putNna(data)
+    postNna(data)
   }
 
   const onSubmitChange = async ({ id, parentesco, responsable }) => await axios.put(ENDPOINT.lista, { id, parentesco, responsable }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => handleCloseChange())
 
+  const onSubmitChangeNna = async (data) => {
+    const id = selectId
+    const datos = {
+      id,
+      data,
+      tipo
+    }
+    await axios.put(ENDPOINT.dato, { datos }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((r) => handleCloseNnaChange())
+  }
+  const onSubmitChangeAdult = async (data) => {
+    const id = selectId
+    const datos = {
+      id,
+      data,
+      tipo
+    }
+    if (tipo === 13) {
+      await axios.put(ENDPOINT.dato, { datos }, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then((r) => handleCloseAdultChange())
+    } else {
+      await axios.put(ENDPOINT.adulto, { datos }, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then((r) => handleCloseAdultChange())
+    }
+  }
+
   const okButton = async () => {
     await putData(selectId).then((result) => {
       if (result.data === true) {
-        notify(selectNna, getProfesional.nombre, 'admin')
+        notify(selectNna, getProfesional.nombre)
         setSelectId(null)
         setSelectNna(null)
         getProfesionalData()
@@ -186,15 +229,9 @@ const useHandle = () => {
     })
     handleClose()
   }
-  const okButtonUsuario = () => {
-    notify(selectNna)
-    putDataUser(selectId)
-  }
+
   // CRUD
-  const putDataUser = async (id) => await axios.put(ENDPOINT.user, { rol: nombreProfesional.rol, id }, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  const putAdulto = async (data) => await axios.put(ENDPOINT.adulto, { data }, {
+  const postAdulto = async (data) => await axios.post(ENDPOINT.adulto, { data }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
     notifyIngreso(data.responsable)
@@ -206,7 +243,7 @@ const useHandle = () => {
       handleAddNNa(4)
     }
   })
-  const putNna = async (data) => await axios.put(ENDPOINT.nna, { data }, {
+  const postNna = async (data) => await axios.post(ENDPOINT.nna, { data }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
     notifyIngreso(data.nombre)
@@ -299,7 +336,7 @@ const useHandle = () => {
       setLitleCharge(false)
     }).catch((error) => console.error(error))
 
-  const putData = async (id) => await axios.put(ENDPOINT.admin, { rol: 3, id }, {
+  const putData = async (id) => await axios.put(ENDPOINT.admin, { id }, {
     headers: { Authorization: `Bearer ${token}` }
   })
   const getDataForI = async (id, rol) => {
@@ -338,9 +375,11 @@ const useHandle = () => {
     handleShowAdult,
     handleShowNna,
     handleCloseNna,
+    handleCloseNnaChange,
     handleCloseChange,
     handleCloseFormato,
     handleCloseAdult,
+    handleCloseAdultChange,
     handleShowFormato,
     handleClick,
     handleClickFormato,
@@ -348,13 +387,15 @@ const useHandle = () => {
     handleClickDescarga,
     handleAddNNa,
     onSubmitAdulto,
-    okButtonUsuario,
     onSubmitChange,
     onSubmitNna,
     okButton,
     getProfesionalData,
     postAnalisis,
-    onSubmitAnalisis
+    onSubmitAnalisis,
+    onSubmitChangeNna,
+    onSubmitChangeAdult,
+    getListas
   }
 }
 

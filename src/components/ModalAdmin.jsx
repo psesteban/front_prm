@@ -5,12 +5,11 @@ import { useForm } from 'react-hook-form'
 import ModalFormatos from './ModalFormatos.jsx'
 import useHandle from '../hooks/useHandle.jsx'
 
-const ModalAddNew = () => {
+export const ModalAddNew = () => {
   const { register, handleSubmit } = useForm()
 
   const {
     listas,
-    show,
     showAdult,
     showNna,
     showNewAd
@@ -23,29 +22,11 @@ const ModalAddNew = () => {
     handleCloseNna,
     onSubmitNna,
     handleCloseChange,
-    onSubmitChange,
-    handleClose,
-    okButton
+    onSubmitChange
   } = useHandle()
 
   return (
     <>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Envio de Informe</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Es seguro que el informe está enviado?</Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose}>
-            Aún no
-          </Button>
-          <Button variant='primary' onClick={okButton}>
-            Enviado👍
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <ModalFormatos />
-
       {listas && (
 
         <>
@@ -309,7 +290,7 @@ const ModalAddNew = () => {
                 </Form.Group>
                 <Form.Group as={Col} md='2' controlId='basicParentesco'>
                   <Form.Label>Parentesco</Form.Label>
-                  <Form.Select {...register('parentesco')} aria-label='Default select example'>
+                  <Form.Select {...register('parentesco')} aria-label='Default select'>
                     <option>Es su (del niño):</option>
                     {listas.parentesco.map((e) => (
                       <option key={e.id} value={e.id}>{e.nombre}</option>))}
@@ -360,7 +341,7 @@ const ModalAddNew = () => {
                     {...register('id')}
                   />
                   <Form.Control.Feedback type='invalid'>
-                    Ingresa domicilio actual
+                    Ingresa Código exacto
                   </Form.Control.Feedback>
                 </Form.Group>
               </Row>
@@ -422,4 +403,27 @@ const ModalAddNew = () => {
   )
 }
 
-export default ModalAddNew
+export const ModalInforme = () => {
+  const { show } = useContext(Context)
+  const { handleClose, okButton } = useHandle()
+
+  return (
+    <>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Envio de Informe</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Es seguro que el informe está enviado?</Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={handleClose}>
+            Aún no
+          </Button>
+          <Button variant='primary' onClick={okButton}>
+            Enviado👍
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <ModalFormatos />
+    </>
+  )
+}

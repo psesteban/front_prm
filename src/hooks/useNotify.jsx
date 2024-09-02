@@ -2,10 +2,8 @@ import { toast } from 'react-toastify'
 
 const useNotify = () => {
 // mensaje felicidades al clickear termino de informe
-  const notify = (idNna, profesional, rol) => {
-    let mensaje = 'felicidades, esta listo'
-    if (rol === 'usuario') mensaje = `felicidades ${profesional} terminaste tu parte del informe de ${idNna} 💝`
-    else if (rol === 'admin') mensaje = `felicidades ${profesional} informe de ${idNna} 💝revisado y enviado`
+  const notify = (idNna, profesional) => {
+    const mensaje = `felicidades ${profesional} informe de ${idNna} 💝revisado y enviado`
     toast.success(mensaje, {
       position: 'top-right',
       autoClose: 5000,

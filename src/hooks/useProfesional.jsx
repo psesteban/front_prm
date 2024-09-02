@@ -10,6 +10,7 @@ const useProfesional = () => {
   const [dataNna, setDataNna] = useState(null)
   const [duplas, setDuplas] = useState(['duplas'])
   const [isLoading, setIsLoading] = useState(false)
+  const [tipo, setTipo] = useState(0)
 
   // modal
   const [listas, setListas] = useState(null)
@@ -24,7 +25,8 @@ const useProfesional = () => {
   const [selectNna, setSelectNna] = useState(null)
   const [addNna, setAddNna] = useState(true)
   const [nombreProfesional, setNombreProfesional] = useState({ nombre: 'profesional', rol: 'profesional', dupla: 'colega' })
-
+  const [showNnaChange, setShowNnaChange] = useState(null)
+  const [showAdultChange, setShowAdultChange] = useState(null)
   const calcularEdad = (fechaNacimiento) => {
     const fechaNacimientoObj = new Date(fechaNacimiento)
     const hoy = new Date()
@@ -444,7 +446,13 @@ const useProfesional = () => {
     nombreProfesional,
     setNombreProfesional,
     isLoading,
-    setIsLoading
+    setIsLoading,
+    tipo,
+    setTipo,
+    showNnaChange,
+    setShowNnaChange,
+    showAdultChange,
+    setShowAdultChange
   }
 }
 

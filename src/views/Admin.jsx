@@ -1,18 +1,17 @@
 import Context from '../contexts/context.js'
-import ModalAddNew from '../components/ModalAdmin.jsx'
+import useHandle from '../hooks/useHandle.jsx'
+import { ModalInforme } from '../components/ModalAdmin.jsx'
 import { useContext, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Container, Card, ListGroup, Button, Badge, Stack, Spinner, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Container, Card, ListGroup, Button } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-toastify/dist/ReactToastify.css'
 import { Progress } from 'react-sweet-progress'
 import 'react-sweet-progress/lib/style.css'
 import './Profile.css'
-import useHandle from '../hooks/useHandle.jsx'
 
 const Admin = () => {
-  const { getProfesional, isLoading, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, litleCharge, duplas, setDuplas } = useContext(Context)
-  const { handleAddNNa, handleClick, handleClickFormato, getProfesionalData } = useHandle()
+  const { getProfesional, isLoading, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, duplas, setDuplas } = useContext(Context)
+  const { handleClick, handleClickFormato, getProfesionalData } = useHandle()
   const [logro, setLogro] = useState(100)
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
@@ -87,25 +86,6 @@ const Admin = () => {
       )}
       {!isLoading && getProfesional && (
         <>
-          <Card className='editar'>
-            <DropdownButton
-              id='dropdown-item-button' title={litleCharge
-                ? <Spinner
-                    as='span'
-                    animation='grow'
-                    size='sm'
-                    role='status'
-                    aria-hidden='true'
-                  />
-                : '👩‍👧‍👦'}
-            >
-              <Dropdown.ItemText>Modificar Datos 👇</Dropdown.ItemText>
-              <Dropdown.Item as='button' onClick={() => handleAddNNa(1)}>Agregar NNJ</Dropdown.Item>
-              <Dropdown.Item as='button' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Dropdown.Item>
-            </DropdownButton>
-            <Link className='btn m-1 btn-light' to='/analisis'>📝🤝</Link>
-
-          </Card>
           <Card className='credencial'>
             <h1>
               Hola <span className='fw-bold'>{getProfesional.nombre}</span>
@@ -131,19 +111,8 @@ const Admin = () => {
               <ListGroup variant='flush'>
                 {getPendientes.map((pendiente) => (
                   <ListGroup.Item key={pendiente.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 1)}>{pendiente.nombre}</Button> {pendiente.estado
-                      ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>}{' '}
-                    <Stack direction='horizontal' gap={2}>
-                      <h6> I. psicológico {pendiente.ps
-                        ? <Badge bg='success'>✔️</Badge>
-                        : <Badge bg='warning' text='dark'>pendiente</Badge>}
-                      </h6>
-                      <h6> I. Social {pendiente.ts
-                        ? <Badge bg='success'>✔️</Badge>
-                        : <Badge bg='warning' text='dark'>pendiente</Badge>}
-                      </h6>
-                    </Stack>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 1)}>{pendiente.nombre}</Button>
+                    <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>{' '}
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -155,19 +124,8 @@ const Admin = () => {
               <ListGroup variant='flush'>
                 {getAtrasos.map((atrasado) => (
                   <ListGroup.Item key={atrasado.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 1)}>{atrasado.nombre}</Button> {atrasado.estado
-                      ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}</Button>}{' '}
-                    <Stack direction='horizontal' gap={2}>
-                      <h6> I. psicológico {atrasado.ps
-                        ? <Badge bg='success'>✔️</Badge>
-                        : <Badge bg='danger'>atrasado</Badge>}
-                      </h6>
-                      <h6> I. Social {atrasado.ts
-                        ? <Badge bg='success'>✔️</Badge>
-                        : <Badge bg='danger'>atrasado</Badge>}
-                      </h6>
-                    </Stack>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 1)}>{atrasado.nombre}</Button>
+                    <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}</Button>{' '}
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -175,7 +133,7 @@ const Admin = () => {
           </Card>
         </>
       )}
-      <ModalAddNew />
+      <ModalInforme />
     </Container>
   )
 }
