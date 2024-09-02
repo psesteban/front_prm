@@ -62,7 +62,7 @@ export const ModalCambios = () => {
                 />
                 <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
               </Form.Group>
-            </>
+                             </>
             )}
             {tipo === 19 && (
               <Form.Group as={Col} md='6' controlId='validationCustomUsername'>
@@ -209,7 +209,6 @@ export const ModalCambios = () => {
               </Form.Group>
             )}
             {tipo === 7 && (
-
               <Form.Group as={Col} md='5' controlId='basicNacimiento'>
                 <Form.Label>Fecha de nacimiento</Form.Label>
                 <Form.Control
@@ -222,7 +221,6 @@ export const ModalCambios = () => {
               </Form.Group>
             )}
             {tipo === 8 && (
-
               <Form.Group as={Col} md='6' controlId='basicTratante'>
                 <Form.Label>Tratante a cargo</Form.Label>
                 <Form.Select {...register('tratante')} aria-label='Default select example'>
@@ -236,7 +234,6 @@ export const ModalCambios = () => {
               </Form.Group>
             )}
             {tipo === 9 && (
-
               <Form.Group as={Col} md='5' controlId='basicRit'>
                 <Form.Label>Rit</Form.Label>
                 <InputGroup hasValidation>
@@ -280,7 +277,6 @@ export const ModalCambios = () => {
               </Form.Group>
             )}
             {tipo === 12 && (
-
               <Form.Group as={Col} md='6' controlId='basicMotivo'>
                 <Form.Label>Motivo de Ingreso</Form.Label>
                 <Form.Select {...register('motivo')} aria-label='Default select example'>
@@ -294,7 +290,6 @@ export const ModalCambios = () => {
               </Form.Group>
             )}
             {tipo === 13 && (
-
               <Form.Group as={Col} md='4' controlId='basicParentesco'>
                 <Form.Label>Parentesco</Form.Label>
                 <Form.Select {...register('parentesco')} aria-label='Default select example'>
@@ -308,7 +303,6 @@ export const ModalCambios = () => {
               </Form.Group>
             )}
             {tipo === 14 && (
-
               <Form.Group as={Col} md='5' controlId='basicSalud'>
                 <Form.Label>Centro de Salud</Form.Label>
                 <Form.Select {...register('salud')} aria-label='Default select example'>

@@ -189,8 +189,15 @@ const useHandle = () => {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => handleCloseChange())
 
-  const onSubmitChangeNna = async (data) => {
+  const onSubmitChangeNna = async (input) => {
     const id = selectId
+    let data = input
+    if (tipo === 2) {
+      const rutParteA = parseInt(input.rut)
+      const rutDigito = input.rutDigito
+      const rut = accounting.formatNumber(rutParteA, 0, '.') + '-' + rutDigito
+      data = { rut }
+    }
     const datos = {
       id,
       data,
@@ -200,22 +207,23 @@ const useHandle = () => {
       headers: { Authorization: `Bearer ${token}` }
     }).then((r) => handleCloseNnaChange())
   }
-  const onSubmitChangeAdult = async (data) => {
+  const onSubmitChangeAdult = async (input) => {
     const id = selectId
+    let data = input
+    if (tipo === 18) {
+      const rutParteA = parseInt(input.rut)
+      const rutDigito = input.rutDigito
+      const rut = accounting.formatNumber(rutParteA, 0, '.') + '-' + rutDigito
+      data = { rut }
+    }
     const datos = {
       id,
       data,
       tipo
     }
-    if (tipo === 13) {
-      await axios.put(ENDPOINT.dato, { datos }, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).then((r) => handleCloseAdultChange())
-    } else {
-      await axios.put(ENDPOINT.adulto, { datos }, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).then((r) => handleCloseAdultChange())
-    }
+    await axios.put(ENDPOINT.adulto, { datos }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((r) => handleCloseAdultChange())
   }
 
   const okButton = async () => {

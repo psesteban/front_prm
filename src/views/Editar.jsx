@@ -100,16 +100,16 @@ const Editar = () => {
               </ListGroup>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
-                  Adulto Responsable: <Button variant='outline-info' onClick={() => handleCambio(17)}> {caso.adulto}</Button>
-                  <Button variant='outline-info' onClick={() => handleCambio(21)}>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Button>
+                  Adulto Responsable: <Button variant='outline-info' onClick={() => handleCambio(17, caso.idAdulto)}> {caso.adulto}</Button>
+                  <Button variant='outline-info' onClick={() => handleCambio(21, caso.idAdulto)}>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Button>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleCambio(18)}>Rut: {caso.runAdulto}</Button>
+                  <Button variant='outline-info' onClick={() => handleCambio(18, caso.idAdulto)}>Rut: {caso.runAdulto}</Button>
                   <Button variant='outline-info' onClick={() => handleCambio(13, caso.id)}>🪢{caso.parentesco}</Button>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleCambio(19)}>📳{caso.telefono}</Button>
-                  <Button variant='outline-info' onClick={() => handleCambio(20)}>💪{caso.labores}</Button>
+                  <Button variant='outline-info' onClick={() => handleCambio(19, caso.idAdulto)}>📳{caso.telefono}</Button>
+                  <Button variant='outline-info' onClick={() => handleCambio(20, caso.idAdulto)}>💪{caso.labores}</Button>
                 </ListGroup.Item>
               </ListGroup>
             </Accordion.Body>
