@@ -33,7 +33,8 @@ const useHandle = () => {
     setProfesional,
     setIsLoading,
     setShowNnaChange,
-    setShowAdultChange
+    setShowAdultChange,
+    setHonor
   } = useContext(Context)
 
   // configuración del modal
@@ -362,6 +363,18 @@ const useHandle = () => {
         console.error(error)
       })
   }
+  const getLogros = async (id) => {
+    const params = { id }
+
+    await axios.get(ENDPOINT.dato, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setHonor(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
   const getProfesionalData = async () => {
     setIsLoading(true)
     await axios.get(ENDPOINT.admin, {
@@ -403,7 +416,8 @@ const useHandle = () => {
     onSubmitAnalisis,
     onSubmitChangeNna,
     onSubmitChangeAdult,
-    getListas
+    getListas,
+    getLogros
   }
 }
 

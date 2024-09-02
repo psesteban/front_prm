@@ -7,9 +7,8 @@ import { Accordion, ListGroup, Button, Badge } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const Casos = () => {
-  const { getProfesional } = useContext(Context)
+  const { getProfesional, formatoFecha } = useContext(Context)
   const { handleClick, getListas } = useHandle()
-  const formatoFecha = (fecha) => { return new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
   const calcularEdad = (fecha) => {
     const hoy = new Date()
     const fechaNacimiento = new Date(fecha)

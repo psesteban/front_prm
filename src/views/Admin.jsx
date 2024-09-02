@@ -10,8 +10,8 @@ import 'react-sweet-progress/lib/style.css'
 import './Profile.css'
 
 const Admin = () => {
-  const { getProfesional, isLoading, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, duplas, setDuplas } = useContext(Context)
-  const { handleClick, handleClickFormato, getProfesionalData } = useHandle()
+  const { getProfesional, isLoading, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, duplas, setDuplas, honor } = useContext(Context)
+  const { handleClick, handleClickFormato, getProfesionalData, getLogros } = useHandle()
   const [logro, setLogro] = useState(100)
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
@@ -48,6 +48,8 @@ const Admin = () => {
         ? [...new Set(casos.map(caso => caso.profesional))]
         : []
       setDuplas(profesionales)
+      getLogros(getProfesional.id)
+      console.log(honor)
     }
   }, [isLoading])
 
@@ -95,13 +97,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-                </ListGroup>
+              </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-                </ListGroup>}
+              </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>

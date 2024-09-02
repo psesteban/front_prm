@@ -27,6 +27,8 @@ const useProfesional = () => {
   const [nombreProfesional, setNombreProfesional] = useState({ nombre: 'profesional', rol: 'profesional', dupla: 'colega' })
   const [showNnaChange, setShowNnaChange] = useState(null)
   const [showAdultChange, setShowAdultChange] = useState(null)
+  const [honor, setHonor] = useState(null)
+
   const calcularEdad = (fechaNacimiento) => {
     const fechaNacimientoObj = new Date(fechaNacimiento)
     const hoy = new Date()
@@ -407,6 +409,7 @@ const useProfesional = () => {
       setAtrasos(filtro)
     }
   }
+  const formatoFecha = (fecha) => { return new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 
   const setProfesional = (profesional) => setUser(profesional)
   return {
@@ -455,7 +458,10 @@ const useProfesional = () => {
     showNnaChange,
     setShowNnaChange,
     showAdultChange,
-    setShowAdultChange
+    setShowAdultChange,
+    formatoFecha,
+    honor,
+    setHonor
   }
 }
 

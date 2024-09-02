@@ -3,13 +3,12 @@ import useHandle from '../hooks/useHandle.jsx'
 import { ModalAddNew } from '../components/ModalAdmin.jsx'
 import { ModalCambios } from '../components/ModalCambios.jsx'
 import ModalFormatos from '../components/ModalFormatos.jsx'
-
 import { useContext, useEffect } from 'react'
 import { Spinner, Dropdown, DropdownButton, Accordion, Button, ListGroup } from 'react-bootstrap'
 
 const Editar = () => {
   const {
-    getProfesional, litleCharge, setTipo, setShowAdultChange, setShowNnaChange, setSelectId
+    getProfesional, litleCharge, setTipo, setShowAdultChange, setShowNnaChange, setSelectId, formatoFecha
   } = useContext(Context)
   const { handleAddNNa, getListas, handleClickFormato } = useHandle()
 
@@ -22,7 +21,6 @@ const Editar = () => {
       setShowAdultChange(true)
     }
   }
-  const formatoFecha = (fecha) => { return new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
   const calcularEdad = (fecha) => {
     const hoy = new Date()
     const fechaNacimiento = new Date(fecha)

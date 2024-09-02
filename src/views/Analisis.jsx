@@ -5,7 +5,7 @@ import useHandle from '../hooks/useHandle.jsx'
 import ModalResumen from '../components/ModalResumen.jsx'
 import './Analisis.css'
 export const Analisis = () => {
-  const { getProfesional, duplas, setSelectId } = useContext(Context)
+  const { getProfesional, duplas, setSelectId, formatoFecha } = useContext(Context)
   const [listas, setListas] = useState({})
   const casos = getProfesional.casos
   const { handleShow } = useHandle()
@@ -40,7 +40,7 @@ export const Analisis = () => {
                 <Accordion.Item eventKey={index} key={index}>
                   <Accordion.Header>{(dato.resumen) ? '🗒️' : '🅾'}{dato.nombre}</Accordion.Header>
                   <Accordion.Body>
-                    {(dato.resumen) ? <div><h1>{dato.ultima}</h1><p>{dato.resumen}</p><h4>{dato.url}</h4></div> : <Button onClick={() => buttonAnalisis(dato.id)}>Registrar Análisis</Button>}
+                    {(dato.resumen) ? <div>Último análisis:<h3> {formatoFecha(dato.ultima)}</h3><p>{dato.resumen}</p>Link:<h4>{dato.url}</h4></div> : <Button onClick={() => buttonAnalisis(dato.id)}>Registrar Análisis</Button>}
                   </Accordion.Body>
                 </Accordion.Item>
               ))}
