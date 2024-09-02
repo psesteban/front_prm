@@ -38,7 +38,7 @@ export const Analisis = () => {
             <Accordion defaultActiveKey='0'>
               {datosPersona.map((dato, index) => (
                 <Accordion.Item eventKey={index} key={index}>
-                  <Accordion.Header>{dato.nombre}</Accordion.Header>
+                  <Accordion.Header>{(dato.resumen) ? '🗒️' : '🅾'}{dato.nombre}</Accordion.Header>
                   <Accordion.Body>
                     {(dato.resumen) ? <div><h1>{dato.ultima}</h1><p>{dato.resumen}</p><h4>{dato.url}</h4></div> : <Button onClick={() => buttonAnalisis(dato.id)}>Registrar Análisis</Button>}
                   </Accordion.Body>
