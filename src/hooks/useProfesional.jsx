@@ -356,7 +356,6 @@ const useProfesional = () => {
       }))
       : []
     const today = new Date()
-    const todayMonth = today.getMonth()
 
     const filteredCasos = updatedCasos.filter(caso => {
       const { fechaInformePendiente } = caso
@@ -369,9 +368,13 @@ const useProfesional = () => {
     }))
     setAtrasos(updatedFormatFechas)
 
+    const limitDate = new Date(today)
+    limitDate.setDate(today.getDate() + 31)
+
     const filteredCasosMes = updatedCasos.filter(caso => {
       const { fechaInformePendiente } = caso
-      return fechaInformePendiente > today && fechaInformePendiente.getMonth() === todayMonth
+      return fechaInformePendiente > today &&
+             fechaInformePendiente <= limitDate
     })
     const enOrdenPendientes = filteredCasosMes.sort((a, b) => a.fechaInformePendiente - b.fechaInformePendiente)
 

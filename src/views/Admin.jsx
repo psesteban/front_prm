@@ -54,15 +54,13 @@ const Admin = () => {
   const percentWork = async () => {
     if (filter) {
       const totalAtrasos = getAtrasos.length
-      const totalPendientes = getPendientes.length
-      const terminados = 25 - (totalAtrasos) - (totalPendientes * 0.5)
+      const terminados = 25 - (totalAtrasos * 1.5)
       const porcentaje = (terminados * 100 / 25)
       setLogro(porcentaje)
     } else {
       const total = totalCasos
       const atrasados = getAtrasos.length
-      const pendientes = getPendientes.length
-      const terminados = total - atrasados - (pendientes * 0.5)
+      const terminados = total - (atrasados * 1.5)
       const porcentaje = (terminados * 100 / totalCasos)
       setLogro(porcentaje)
     }
@@ -97,13 +95,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-              </ListGroup>
+                </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-              </ListGroup>}
+                </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>
@@ -111,7 +109,7 @@ const Admin = () => {
               <ListGroup variant='flush'>
                 {getPendientes.map((pendiente) => (
                   <ListGroup.Item key={pendiente.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 1)}>{pendiente.nombre}</Button>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 1)}>📎{pendiente.nombre}</Button>
                     <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>{' '}
                   </ListGroup.Item>
                 ))}
@@ -124,7 +122,7 @@ const Admin = () => {
               <ListGroup variant='flush'>
                 {getAtrasos.map((atrasado) => (
                   <ListGroup.Item key={atrasado.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 1)}>{atrasado.nombre}</Button>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 1)}>📎{atrasado.nombre}</Button>
                     <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}</Button>{' '}
                   </ListGroup.Item>
                 ))}

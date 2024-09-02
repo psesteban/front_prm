@@ -2,6 +2,8 @@ import Context from '../contexts/context.js'
 import useHandle from '../hooks/useHandle.jsx'
 import { ModalAddNew } from '../components/ModalAdmin.jsx'
 import { ModalCambios } from '../components/ModalCambios.jsx'
+import ModalFormatos from '../components/ModalFormatos.jsx'
+
 import { useContext, useEffect } from 'react'
 import { Spinner, Dropdown, DropdownButton, Accordion, Button, ListGroup } from 'react-bootstrap'
 
@@ -9,7 +11,7 @@ const Editar = () => {
   const {
     getProfesional, litleCharge, setTipo, setShowAdultChange, setShowNnaChange, setSelectId
   } = useContext(Context)
-  const { handleAddNNa, getListas } = useHandle()
+  const { handleAddNNa, getListas, handleClickFormato } = useHandle()
 
   const handleCambio = (tipo, id) => {
     setTipo(tipo)
@@ -111,6 +113,9 @@ const Editar = () => {
                   <Button variant='outline-info' onClick={() => handleCambio(19, caso.idAdulto)}>📳{caso.telefono}</Button>
                   <Button variant='outline-info' onClick={() => handleCambio(20, caso.idAdulto)}>💪{caso.labores}</Button>
                 </ListGroup.Item>
+                <ListGroup.Item>
+                  <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, 1)}>📎Conseguir formatos</Button>
+                </ListGroup.Item>
               </ListGroup>
             </Accordion.Body>
           </Accordion.Item>
@@ -118,6 +123,7 @@ const Editar = () => {
       </Accordion>
       <ModalAddNew />
       <ModalCambios />
+      <ModalFormatos />
     </>
   )
 }

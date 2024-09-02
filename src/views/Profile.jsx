@@ -72,8 +72,7 @@ const Profile = () => {
 
   const percentWork = () => {
     const totalAtrasos = getAtrasos.length
-    const totalPendientes = getPendientes.length
-    const descuento = 25 - (totalAtrasos) - (totalPendientes * 0.5)
+    const descuento = 25 - (totalAtrasos * 1.5)
     const porcentaje = (descuento * 100 / 25)
     setLogro(porcentaje)
   }
