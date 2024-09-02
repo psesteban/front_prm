@@ -62,7 +62,7 @@ export const ModalCambios = () => {
                 />
                 <Form.Control.Feedback>revisa que esté correcto</Form.Control.Feedback>
               </Form.Group>
-                             </>
+            </>
             )}
             {tipo === 19 && (
               <Form.Group as={Col} md='6' controlId='validationCustomUsername'>

@@ -186,9 +186,9 @@ const Profile = () => {
                         <Button onClick={() => putDataDate(selectId)}>Guardar cambios</Button>
                       </Modal.Footer>
                     </Modal>
-                  </div>
+                    </div>
                   : <div> {formatedDate(caso.prorroga)} 🔚</div>}
-                </div>
+                  </div>
                 : <p>no corresponde</p>}
               </td>
               {getProfesional.rol ? <td><Button variant='danger' onClick={() => handleDelete(caso.id, caso.nombre)}>X</Button></td> : <></>}

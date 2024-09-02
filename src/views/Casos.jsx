@@ -1,146 +1,99 @@
-import axios from 'axios'
 import Context from '../contexts/context.js'
 import useHandle from '../hooks/useHandle.jsx'
-import { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ENDPOINT } from '../config/constans.js'
-import { Container, Card, ListGroup, Button } from 'react-bootstrap'
+import { useContext, useEffect } from 'react'
+import ModalFormatos from '../components/ModalFormatos.jsx'
+
+import { Accordion, ListGroup, Button, Badge } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'react-toastify/dist/ReactToastify.css'
-import { Progress } from 'react-sweet-progress'
-import 'react-sweet-progress/lib/style.css'
 
 const Casos = () => {
-  const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional } = useContext(Context)
-  const { handleClickFormato, handleClick } = useHandle()
-  const token = window.sessionStorage.getItem('token')
-  const [isLoading, setIsLoading] = useState(false)
-  const [logro, setLogro] = useState(100)
-  const [plan, setPlan] = useState(false)
-  const [win, setWin] = useState(false)
-
-  const getProfesionalData = async () => {
-    setIsLoading(true)
-    try {
-      const result = await axios.get(ENDPOINT.user, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      const resultado = result.data
-      await setProfesional(resultado)
-      const { profesional } = resultado
-      return profesional
-    } catch (error) {
-      console.error(error)
-      window.sessionStorage.removeItem('token')
-      setProfesional(null)
-      navigate('/')
-    } finally {
-      setIsLoading(false)
-    }
+  const { getProfesional } = useContext(Context)
+  const { handleClick, getListas } = useHandle()
+  const formatoFecha = (fecha) => { return new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
+  const calcularEdad = (fecha) => {
+    const hoy = new Date()
+    const fechaNacimiento = new Date(fecha)
+    const diferenciaEnMS = hoy - fechaNacimiento
+    const edad = Math.floor(diferenciaEnMS / (1000 * 60 * 60 * 24 * 365.25))
+    return `${edad} años`
   }
+  const casos = getProfesional.casos.sort((a, b) => {
+    const nameA = a.nombre.toLowerCase()
+    const nameB = b.nombre.toLowerCase()
+    if (nameA < nameB) {
+      return -1
+    } else if (nameA > nameB) {
+      return 1
+    } else {
+      return 0
+    }
+  })
 
   useEffect(() => {
-    percentWork()
-    if (logro < 50) setPlan(true)
-    else setPlan(false)
-    if (logro > 90) {
-      setWin(true)
-    } else setWin(false)
-  }, [filterAtrasos])
-
-  useEffect(() => {
-    // Función para verificar si un objeto está vacío
-    const isEmptyObject = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object
-
-    // Verificar si getProfesional es null, undefined o un objeto vacío
-    if (!getProfesional || typeof getProfesional === 'undefined' || isEmptyObject(getProfesional)) {
-      getProfesionalData().then((result) => {
-        if (result) {
-          setNombreProfesional({ nombre: result.nombre, rol: result.idRol, dupla: result.dupla })
-        }
-      })
+    if (getProfesional) {
+      getListas()
+      console.log(casos)
     }
   }, [])
 
-  useEffect(() => {
-    if (getProfesional && !isLoading) {
-      filterAtrasos()
-    }
-  }, [isLoading])
-
-  const percentWork = () => {
-    const totalAtrasos = getAtrasos.length
-    const totalPendientes = getPendientes.length
-    const descuento = 25 - (totalAtrasos) - (totalPendientes * 0.5)
-    const porcentaje = (descuento * 100 / 25)
-    setLogro(porcentaje)
-  }
   return (
-    <Container className='resumen'>
-      {isLoading && (
-        <h1>
-          Cargando datos del profesional... <p>Dame unos segundos ⌛</p>
-        </h1>
-      )}
-      {!isLoading && !getProfesional && (
-        <h1>
-          Un poco más ⌛
-        </h1>
-      )}
-      {!isLoading && getProfesional && (
-        <>
-          <Card className='credencial'>
-            <h1>
-              Hola <span className='fw-bold'>{nombreProfesional.nombre}</span>
-            </h1>
-            <Progress
-              percent={logro} status={plan ? 'error' : 'active'}
-              theme={{
-                active: {
-                  symbol: win ? '🏄‍' : '⌛💻',
-                  trailColor: 'pink',
-                  color: win ? 'green' : 'yellow'
-                },
-                error: {
-                  symbol: '🆘',
-                  trailColor: 'pink',
-                  color: 'red'
-                }
-              }}
-            />
-          </Card>
-          <Card className='pendientes'>
-            <Card.Body>
-              <Card.Title>Pendientes</Card.Title>
+    <>
+      <Accordion defaultActiveKey='0'>
+        {casos.map((caso, index) => (
+          <Accordion.Item eventKey={index} key={index}>
+            <Accordion.Header>{caso.nombre}</Accordion.Header>
+            <Accordion.Body>
+              <Badge bg='primary'>{calcularEdad(caso.edad)} al {formatoFecha(caso.edad)}</Badge>
+              <Badge bg='secondary'> Rut: {caso.rut}</Badge>
+              <Badge bg='info'>{caso.genero}</Badge>
               <ListGroup variant='flush'>
-                {getPendientes.map((pendiente) => (
-                  <ListGroup.Item key={pendiente.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 2)}>{pendiente.nombre}</Button> - {pendiente.estado
-                      ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-warning' onClick={() => handleClick(pendiente.id, pendiente.nombre)}>{pendiente.fechaInformePendiente}</Button>}{' '}
-                  </ListGroup.Item>
-                ))}
+                <ListGroup.Item>
+                  <Badge> Nacionalidad {caso.nacionalidad}</Badge>
+                </ListGroup.Item>
               </ListGroup>
-            </Card.Body>
-          </Card>
-          <Card className='atrasados'>
-            <Card.Body>
-              <Card.Title>Atrasados</Card.Title>
               <ListGroup variant='flush'>
-                {getAtrasos.map((atrasado) => (
-                  <ListGroup.Item key={atrasado.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 2)}>{atrasado.nombre}</Button> - {atrasado.estado
-                      ? <Button variant='success'>👍✔️</Button>
-                      : <Button variant='outline-danger' onClick={() => handleClick(atrasado.id, atrasado.nombre)}>{atrasado.fechaInformePendiente}⌛🔲</Button>}{' '}
-                  </ListGroup.Item>
-                ))}
+                <ListGroup.Item>
+                  Domicilio: <Badge variant='outline-info'>🏠{caso.domicilio}</Badge>
+                  <Badge bg='light'>📫{caso.comuna}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Redes: <Badge bg='secondary'>🎒{caso.curso}</Badge> en
+                  <Badge bg='success'>🏫{caso.educacional}</Badge> -
+                  <Badge bg='warning'>🧑‍⚕️{caso.salud}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Causa: <Badge variant='outline-info'>🏛️{caso.juzgado}</Badge> -
+                  <Badge bg='success'>🗃️{caso.rit}</Badge> -
+                  <Badge bg='info'>motivo: ❤️‍🩹{caso.motivo}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Fecha de ingreso a PRM: <Badge bg='light'>{formatoFecha(caso.fecha)}</Badge> -
+                  Tratante: <Badge bg='info'>⚕️{caso.profesional}</Badge>
+                </ListGroup.Item>
               </ListGroup>
-            </Card.Body>
-          </Card>
-        </>
-      )}
-    </Container>
+              <ListGroup variant='flush'>
+                <ListGroup.Item>
+                  Adulto Responsable: <Badge bg='success'> {caso.adulto}</Badge>
+                  <Badge bg='info'>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Badge bg='warning'>Rut: {caso.runAdulto}</Badge>
+                  <Badge bg='info'>🪢{caso.parentesco}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Badge bg='success'>📳{caso.telefono}</Badge>
+                  <Badge bg='info'>💪{caso.labores}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Button variant='outline-info' onClick={() => handleClick(caso.id, caso.nombre)}>📎Conseguir formatos</Button>
+                </ListGroup.Item>
+              </ListGroup>
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
+      </Accordion>
+      <ModalFormatos />
+    </>
   )
 }
 
