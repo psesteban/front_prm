@@ -13,7 +13,7 @@ import './Profile.css'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional } = useContext(Context)
+  const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional, setSesion } = useContext(Context)
   const { handleClickFormato, getLogro } = useHandle()
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
@@ -30,11 +30,13 @@ const Profile = () => {
       const resultado = result.data
       await setProfesional(resultado)
       const { profesional } = resultado
+      setSesion(true)
       return profesional
     } catch (error) {
       console.error(error)
       window.sessionStorage.removeItem('token')
       setProfesional(null)
+      setSesion(false)
       navigate('/')
     } finally {
       setIsLoading(false)

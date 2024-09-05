@@ -36,7 +36,8 @@ const useHandle = () => {
     setShowAdultChange,
     setHonor,
     setPersonas,
-    setShowLogros
+    setShowLogros,
+    setSesion
   } = useContext(Context)
 
   // configuración del modal
@@ -456,10 +457,12 @@ const useHandle = () => {
     }).then((result) => {
       setProfesional(result.data)
       setIsLoading(false)
+      setSesion(true)
     }).catch((error) => {
       console.error(error)
       window.sessionStorage.removeItem('token')
       setProfesional(null)
+      setSesion(false)
       navigate('/')
     }
     )
