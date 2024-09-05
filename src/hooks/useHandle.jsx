@@ -114,7 +114,7 @@ const useHandle = () => {
 
   // submit
 
-  const { notify, notifyIngreso } = useNotify()
+  const { notify, notifyIngreso, notifyXpress } = useNotify()
 
   const onSubmitAdulto = async (datos) => {
     const id = Math.floor(Math.random() * 900 + 2)
@@ -191,7 +191,13 @@ const useHandle = () => {
 
   const onSubmitChange = async ({ id, parentesco, responsable }) => await axios.put(ENDPOINT.lista, { id, parentesco, responsable }, {
     headers: { Authorization: `Bearer ${token}` }
-  }).then((r) => handleCloseChange())
+  }).then((r) => {
+    if (r.data) {
+      notifyXpress('dato de adulto responsable modificado')
+      handleCloseChange()
+    }
+  }
+  )
 
   const onSubmitChangeNna = async (input) => {
     const id = selectId
@@ -209,7 +215,12 @@ const useHandle = () => {
     }
     await axios.put(ENDPOINT.dato, { datos }, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then((r) => handleCloseNnaChange())
+    }).then((r) => {
+      if (r.data) {
+        notifyXpress('dato modificado con exito')
+        handleCloseNnaChange()
+      }
+    })
   }
   const onSubmitChangeAdult = async (input) => {
     const id = selectId
@@ -227,7 +238,12 @@ const useHandle = () => {
     }
     await axios.put(ENDPOINT.adulto, { datos }, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then((r) => handleCloseAdultChange())
+    }).then((r) => {
+      if (r.data) {
+        notifyXpress('dato modificado con exito')
+        handleCloseAdultChange()
+      }
+    })
   }
 
   const okButton = async () => {
@@ -261,11 +277,11 @@ const useHandle = () => {
     notifyIngreso(data.nombre)
     handleCloseNna()
   })
-  const postAnalisis = async (id, date, resumen, url) => await axios.post(ENDPOINT.resumen, { id, date, resumen, url }, {
+  const postAnalisis = async (id, date, resumen, url) => await axios.put(ENDPOINT.resumen, { id, date, resumen, url }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
     if (r.data) {
-      notifyIngreso('Análisis')
+      notifyXpress('Análisis ingresado')
       handleClose()
     } else alert(`Error: ${r.data.message}`)
   }).catch((error) => console.error(error))
@@ -350,7 +366,12 @@ const useHandle = () => {
 
   const putData = async (id) => await axios.put(ENDPOINT.admin, { id }, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  }).then((r) => {
+    if (r.data) {
+      notifyXpress('Listo')
+    } else alert(`Error: ${r.data.message}`)
+  }).catch((error) => console.error(error))
+
   const getDataForI = async (id, rol) => {
     const params = { id }
     let endpoint = null
@@ -410,13 +431,11 @@ const useHandle = () => {
     }
 
     await axios.post(ENDPOINT.logros, { data }, { headers: { Authorization: `Bearer ${token}` } })
-      .then((result) => {
-        setHonor(result.data)
-      })
-      .catch((error) => {
-        console.log(error)
-        console.error(error)
-      })
+      .then((r) => {
+        if (r.data) {
+          notifyXpress('Logro ingresado')
+        } else alert(`Error: ${r.data.message}`)
+      }).catch((error) => console.error(error))
     setShowLogros(false)
   }
 
@@ -424,13 +443,11 @@ const useHandle = () => {
     const params = { id }
 
     await axios.delete(ENDPOINT.logros, { params, headers: { Authorization: `Bearer ${token}` } })
-      .then((result) => {
-        setHonor(result.data)
-      })
-      .catch((error) => {
-        console.log(error)
-        console.error(error)
-      })
+      .then((r) => {
+        if (r.data) {
+          notifyXpress('Logro borrado')
+        } else alert(`Error: ${r.data.message}`)
+      }).catch((error) => console.error(error))
   }
   const getProfesionalData = async () => {
     setIsLoading(true)
