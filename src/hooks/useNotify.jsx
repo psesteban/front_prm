@@ -26,9 +26,20 @@ const useNotify = () => {
     theme: 'dark'
   })
 
+  const notifyXpress = (mensaje) => toast.success(mensaje, {
+    position: 'top-left',
+    autoClose: 1000,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'dark'
+  })
   return {
     notifyIngreso,
-    notify
+    notify,
+    notifyXpress
   }
 }
 
