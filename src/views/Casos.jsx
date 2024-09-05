@@ -31,7 +31,6 @@ const Casos = () => {
   useEffect(() => {
     if (getProfesional) {
       getListas()
-      console.log(casos)
     }
   }, [])
 

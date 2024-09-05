@@ -14,7 +14,7 @@ import './Profile.css'
 const Profile = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional } = useContext(Context)
-  const { handleClickFormato } = useHandle()
+  const { handleClickFormato, getLogro } = useHandle()
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
@@ -58,7 +58,8 @@ const Profile = () => {
     if (!getProfesional || typeof getProfesional === 'undefined' || isEmptyObject(getProfesional)) {
       getProfesionalData().then((result) => {
         if (result) {
-          setNombreProfesional({ nombre: result.nombre, rol: result.idRol, dupla: result.dupla })
+          setNombreProfesional({ nombre: result.nombre, rol: result.idRol, dupla: result.dupla, id: result.id })
+          getLogro(result.id)
         }
       })
     }

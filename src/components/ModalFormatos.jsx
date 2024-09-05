@@ -31,7 +31,7 @@ const ModalFormatos = () => {
             <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
             <Dropdown.Divider />
             <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
-          </>
+            </>
           : <Button variant='primary' disabled>
             <Spinner
               as='span'
@@ -41,7 +41,7 @@ const ModalFormatos = () => {
               aria-hidden='true'
             />
             <span className='visually-hidden'>Loading...</span>
-          </Button>}
+            </Button>}
         <Dropdown.Divider />
         <Button variant='secondary' onClick={() => handleCloseFormato()}>
           Ninguno

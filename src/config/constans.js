@@ -11,5 +11,6 @@ export const ENDPOINT = {
   adulto: `${URLBASE}/adulto`,
   nna: `${URLBASE}/nna`,
   resumen: `${URLBASE}/resumen`,
-  dato: `${URLBASE}/dato`
+  dato: `${URLBASE}/dato`,
+  logros: `${URLBASE}/logros`
 }

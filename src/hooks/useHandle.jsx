@@ -34,7 +34,9 @@ const useHandle = () => {
     setIsLoading,
     setShowNnaChange,
     setShowAdultChange,
-    setHonor
+    setHonor,
+    setPersonas,
+    setShowLogros
   } = useContext(Context)
 
   // configuración del modal
@@ -44,6 +46,7 @@ const useHandle = () => {
   const handleShowAdult = () => setShowAdult(true)
   const handleShowNna = () => setShowNna(true)
   const handleCloseNna = () => setShowNna(false)
+  const handleCloseLogro = () => setShowLogros(false)
   const handleShowChange = () => setShowNewAd(true)
   const handleCloseChange = () => setShowNewAd(false)
   const handleCloseFormato = () => {
@@ -375,6 +378,60 @@ const useHandle = () => {
         console.error(error)
       })
   }
+  const getLogro = async (id) => {
+    const params = { id }
+
+    await axios.get(ENDPOINT.logros, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setHonor(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
+  const getProfesionales = async (id) => {
+    const params = { id }
+    await axios.get(ENDPOINT.adulto, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setPersonas(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
+  const onSubmitLogros = async (input) => {
+    const data = {
+      id: input.id,
+      logro: input.logro,
+      medalla: input.medalla,
+      contenido: input.contenido
+    }
+
+    await axios.post(ENDPOINT.logros, { data }, { headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setHonor(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+    setShowLogros(false)
+  }
+
+  const deleteLogro = async (id) => {
+    const params = { id }
+
+    await axios.delete(ENDPOINT.logros, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setHonor(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
   const getProfesionalData = async () => {
     setIsLoading(true)
     await axios.get(ENDPOINT.admin, {
@@ -417,7 +474,12 @@ const useHandle = () => {
     onSubmitChangeNna,
     onSubmitChangeAdult,
     getListas,
-    getLogros
+    getLogros,
+    getLogro,
+    deleteLogro,
+    onSubmitLogros,
+    getProfesionales,
+    handleCloseLogro
   }
 }
 

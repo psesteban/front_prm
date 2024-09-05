@@ -2,15 +2,33 @@ import Context from '../contexts/context.js'
 import useHandle from '../hooks/useHandle.jsx'
 import { ModalAddNew } from '../components/ModalAdmin.jsx'
 import { ModalCambios } from '../components/ModalCambios.jsx'
+import ModalLogros from '../components/ModalLogros.jsx'
 import ModalFormatos from '../components/ModalFormatos.jsx'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Spinner, Dropdown, DropdownButton, Accordion, Button, ListGroup } from 'react-bootstrap'
 
 const Editar = () => {
+  const [listas, setListas] = useState({})
+
   const {
-    getProfesional, litleCharge, setTipo, setShowAdultChange, setShowNnaChange, setSelectId, formatoFecha
+    getProfesional,
+    litleCharge,
+    setTipo,
+    setShowAdultChange,
+    setShowNnaChange,
+    setSelectId,
+    formatoFecha,
+    setShowLogros,
+    honor
   } = useContext(Context)
-  const { handleAddNNa, getListas, handleClickFormato } = useHandle()
+  const {
+    handleAddNNa,
+    getListas,
+    handleClickFormato,
+    getProfesionales,
+    getLogros,
+    deleteLogro
+  } = useHandle()
 
   const handleCambio = (tipo, id) => {
     setTipo(tipo)
@@ -39,16 +57,47 @@ const Editar = () => {
       return 0
     }
   })
-
+  const agrupar = async () => {
+    const grupos = honor.reduce((acc, persona) => {
+      const nombre = persona.nombre
+      acc[nombre] = acc[nombre] || []
+      acc[nombre].push(persona)
+      return acc
+    }, {})
+    return grupos
+  }
   useEffect(() => {
-    if (getProfesional) {
+    if (getProfesional.id) {
       getListas()
-      console.log(casos)
+      getProfesionales(getProfesional.id)
+      getLogros(getProfesional.id)
+      console.log(honor)
+      agrupar().then((result) => setListas(result))
     }
   }, [])
 
   return (
     <>
+      <h1>Profesionales</h1>
+      <Button variant='outline-success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
+      <Accordion defaultActiveKey='0'>
+        {Object.entries(listas).map(([nombre, datosPersona], index) => (
+          <Accordion.Item key={index} eventKey={index}>
+            <Accordion.Header>{nombre}</Accordion.Header>
+            <Accordion.Body>
+              <ListGroup variant='flush'>
+                {datosPersona.map((dato, index) => (
+                  <ListGroup.Item key={index}>
+                    <h2>{dato.logro} {dato.medalla}</h2>
+                    <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
+      </Accordion>
+      <h1>Casos</h1>
       <DropdownButton
         id='dropdown-item-button' title={litleCharge
           ? <Spinner
@@ -69,7 +118,7 @@ const Editar = () => {
           <Accordion.Item eventKey={index} key={index}>
             <Accordion.Header>{caso.nombre}</Accordion.Header>
             <Accordion.Body>
-              <Button variant='outline-info' onClick={() => handleCambio(1, caso.id)}>Cambiar Nombre</Button>
+              <Button variant='outline-danger' onClick={() => handleCambio(1, caso.id)}>Cambiar Nombre</Button>
               <Button variant='outline-info' onClick={() => handleCambio(7, caso.id)}>{calcularEdad(caso.edad)} al {formatoFecha(caso.edad)}</Button>
               <Button variant='outline-info' onClick={() => handleCambio(2, caso.id)}> Rut: {caso.rut}</Button>
               <Button variant='outline-info' onClick={() => handleCambio(3, caso.id)}>{caso.genero}</Button>
@@ -122,6 +171,7 @@ const Editar = () => {
       <ModalAddNew />
       <ModalCambios />
       <ModalFormatos />
+      <ModalLogros />
     </>
   )
 }

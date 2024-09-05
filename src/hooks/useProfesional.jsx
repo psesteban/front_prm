@@ -11,6 +11,7 @@ const useProfesional = () => {
   const [duplas, setDuplas] = useState(['duplas'])
   const [isLoading, setIsLoading] = useState(false)
   const [tipo, setTipo] = useState(0)
+  const [sesion, setSesion] = useState(false)
 
   // modal
   const [listas, setListas] = useState(null)
@@ -27,6 +28,8 @@ const useProfesional = () => {
   const [nombreProfesional, setNombreProfesional] = useState({ nombre: 'profesional', rol: 'profesional', dupla: 'colega' })
   const [showNnaChange, setShowNnaChange] = useState(null)
   const [showAdultChange, setShowAdultChange] = useState(null)
+  const [showLogros, setShowLogros] = useState(null)
+  const [personas, setPersonas] = useState(null)
   const [honor, setHonor] = useState(null)
 
   const calcularEdad = (fechaNacimiento) => {
@@ -300,23 +303,29 @@ const useProfesional = () => {
         .then(content => {
           const zip = new PizZip(content)
           const doc = new Docxtemplater().loadZip(zip)
+          const edadAdulto = calcularEdad(nna.nacimiento)
           const vencimiento = fechaEntrega(nna.ingreso, nna.numero).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
           const context = {
             el_nombre: nombres,
             el_apellido_p: apellidoPaterno,
             el_apellido_m: apellidoMaterno,
-            f_PII: ingreso,
+            Rut: nna.rut,
+            curso: nna.curso,
+            domicilio: nna.domicilio,
+            comuna: nna.comuna,
+            Rit: nna.rit,
             ft_PII: vencimiento,
             f_nac: fechaNacimiento,
             edad: edadNna,
             sexo: nna.gen,
             nombre_ad: nna.responsable,
             fam: nna.parentesco,
+            fam_edad: edadAdulto,
+            fam_nac: new Date(nna.nacimiento).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+            fam_Rut: nna.run,
             motiv: nna.motivo,
-            f_egreso: egreso,
             f_ingreso: ingreso,
-            n_psico: tratante,
-            n_ts: ts
+            fam_fono: nna.fono
           }
 
           doc.setData(context)
@@ -461,7 +470,13 @@ const useProfesional = () => {
     setShowAdultChange,
     formatoFecha,
     honor,
-    setHonor
+    setHonor,
+    showLogros,
+    setShowLogros,
+    personas,
+    setPersonas,
+    sesion,
+    setSesion
   }
 }
 
