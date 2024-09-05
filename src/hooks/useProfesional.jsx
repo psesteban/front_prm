@@ -8,6 +8,29 @@ const useProfesional = () => {
   const [pendientes, setPendientes] = useState([])
   const [totalCasos, setTotalCasos] = useState(0)
   const [dataNna, setDataNna] = useState(null)
+  const [duplas, setDuplas] = useState(['duplas'])
+  const [isLoading, setIsLoading] = useState(false)
+  const [tipo, setTipo] = useState(0)
+  const [sesion, setSesion] = useState(false)
+
+  // modal
+  const [listas, setListas] = useState(null)
+  const [show, setShow] = useState(false)
+  const [showFormato, setShowFormato] = useState(false)
+  const [showAdult, setShowAdult] = useState(false)
+  const [showNna, setShowNna] = useState(false)
+  const [showNewAd, setShowNewAd] = useState(false)
+  const [litleCharge, setLitleCharge] = useState(false)
+  const [isLoadData, setIsLoadData] = useState(false)
+  const [selectId, setSelectId] = useState(null)
+  const [selectNna, setSelectNna] = useState(null)
+  const [addNna, setAddNna] = useState(true)
+  const [nombreProfesional, setNombreProfesional] = useState({ nombre: 'profesional', rol: 'profesional', dupla: 'colega' })
+  const [showNnaChange, setShowNnaChange] = useState(null)
+  const [showAdultChange, setShowAdultChange] = useState(null)
+  const [showLogros, setShowLogros] = useState(null)
+  const [personas, setPersonas] = useState(null)
+  const [honor, setHonor] = useState(null)
 
   const calcularEdad = (fechaNacimiento) => {
     const fechaNacimientoObj = new Date(fechaNacimiento)
@@ -280,23 +303,29 @@ const useProfesional = () => {
         .then(content => {
           const zip = new PizZip(content)
           const doc = new Docxtemplater().loadZip(zip)
+          const edadAdulto = calcularEdad(nna.nacimiento)
           const vencimiento = fechaEntrega(nna.ingreso, nna.numero).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
           const context = {
             el_nombre: nombres,
             el_apellido_p: apellidoPaterno,
             el_apellido_m: apellidoMaterno,
-            f_PII: ingreso,
+            Rut: nna.rut,
+            curso: nna.curso,
+            domicilio: nna.domicilio,
+            comuna: nna.comuna,
+            Rit: nna.rit,
             ft_PII: vencimiento,
             f_nac: fechaNacimiento,
             edad: edadNna,
             sexo: nna.gen,
             nombre_ad: nna.responsable,
             fam: nna.parentesco,
+            fam_edad: edadAdulto,
+            fam_nac: new Date(nna.nacimiento).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+            fam_Rut: nna.run,
             motiv: nna.motivo,
-            f_egreso: egreso,
             f_ingreso: ingreso,
-            n_psico: tratante,
-            n_ts: ts
+            fam_fono: nna.fono
           }
 
           doc.setData(context)
@@ -338,7 +367,6 @@ const useProfesional = () => {
       }))
       : []
     const today = new Date()
-    const todayMonth = today.getMonth()
 
     const filteredCasos = updatedCasos.filter(caso => {
       const { fechaInformePendiente } = caso
@@ -351,9 +379,13 @@ const useProfesional = () => {
     }))
     setAtrasos(updatedFormatFechas)
 
+    const limitDate = new Date(today)
+    limitDate.setDate(today.getDate() + 31)
+
     const filteredCasosMes = updatedCasos.filter(caso => {
       const { fechaInformePendiente } = caso
-      return fechaInformePendiente > today && fechaInformePendiente.getMonth() === todayMonth
+      return fechaInformePendiente > today &&
+             fechaInformePendiente <= limitDate
     })
     const enOrdenPendientes = filteredCasosMes.sort((a, b) => a.fechaInformePendiente - b.fechaInformePendiente)
 
@@ -386,6 +418,7 @@ const useProfesional = () => {
       setAtrasos(filtro)
     }
   }
+  const formatoFecha = (fecha) => { return new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 
   const setProfesional = (profesional) => setUser(profesional)
   return {
@@ -400,7 +433,50 @@ const useProfesional = () => {
     totalCasos,
     generaWord: generateWordDocument,
     dataNna,
-    setDataNna
+    setDataNna,
+    duplas,
+    setDuplas,
+    listas,
+    setListas,
+    show,
+    showFormato,
+    showAdult,
+    showNna,
+    showNewAd,
+    setShow,
+    setShowFormato,
+    setShowAdult,
+    setShowNna,
+    setShowNewAd,
+    litleCharge,
+    setLitleCharge,
+    isLoadData,
+    setIsLoadData,
+    selectId,
+    setSelectId,
+    selectNna,
+    setSelectNna,
+    addNna,
+    setAddNna,
+    nombreProfesional,
+    setNombreProfesional,
+    isLoading,
+    setIsLoading,
+    tipo,
+    setTipo,
+    showNnaChange,
+    setShowNnaChange,
+    showAdultChange,
+    setShowAdultChange,
+    formatoFecha,
+    honor,
+    setHonor,
+    showLogros,
+    setShowLogros,
+    personas,
+    setPersonas,
+    sesion,
+    setSesion
   }
 }
 

@@ -12,7 +12,11 @@ import Logo from '../assets/logo.svg' // Assuming logo is an SVG
 
 const Navigation = () => {
   const navigate = useNavigate()
-  const { getProfesional, setProfesional } = useContext(Context)
+  const {
+    getProfesional,
+    setProfesional,
+    setSesion
+  } = useContext(Context)
   const [load, setLoad] = useState(false)
 
   const loadGoogleScript = async () => {
@@ -39,16 +43,20 @@ const Navigation = () => {
       alert('Usuario identificado con éxito 😀')
       setProfesional({})
       setLoad(false)
+      setSesion(true)
       if (rol === 3) {
         navigate('/admin')
+        sessionStorage.setItem('sesionprm', rol)
       } else {
         navigate('/perfil')
+        sessionStorage.setItem('sesionprm', 'usuario')
       }
     })
       .catch(({ response: { data } }) => {
         console.error(data.error)
         window.alert(`no se encontro el usuario o ${data.error} 🙁.`)
         setLoad(false)
+        setSesion(false)
       })
   }
 
@@ -57,6 +65,7 @@ const Navigation = () => {
   const logout = () => {
     setProfesional(null)
     window.sessionStorage.removeItem('token')
+    setSesion(false)
     navigate('/')
   }
 
@@ -74,7 +83,7 @@ const Navigation = () => {
                 aria-hidden='true'
               />
               Entrando...🔐
-            </Button>
+              </Button>
             : <Button onClick={() => handleEntry()}>📧Ingresar</Button>}
         </>
       )
@@ -82,8 +91,10 @@ const Navigation = () => {
 
     return (
       <>
-        <Link to='/total' className='btn m-1 btn-light'>Total</Link>
-        <Link className='btn m-1 btn-light' to={getProfesional.rol ? '/admin' : '/perfil'}>Resumen</Link>
+        <Link to='/total' className='btn m-1 btn-light'>Prórrogas</Link>
+        {getProfesional.rol ? <Link className='btn m-1 btn-light' to='/analisis'>Análisis</Link> : <Link className='btn m-1 btn-light' to='/logros'>Logros</Link>}
+        {getProfesional.rol ? <Link className='btn m-1 btn-light' to='/editar'>Editar Datos</Link> : <Link className='btn m-1 btn-light' to='/casos'>Casos</Link>}
+        <Link className='btn m-1 btn-light' to={getProfesional.rol ? '/admin' : '/perfil'}>Informes</Link>
         <button onClick={logout} className='btn btn-danger'>Salir</button>
       </>
     )
