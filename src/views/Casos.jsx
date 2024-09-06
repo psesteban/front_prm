@@ -7,8 +7,8 @@ import { Accordion, ListGroup, Button, Badge } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const Casos = () => {
-  const { getProfesional, formatoFecha } = useContext(Context)
-  const { handleClick, getListas } = useHandle()
+  const { getProfesional, formatoFecha, nombreProfesional } = useContext(Context)
+  const { handleClickFormato, getListas } = useHandle()
   const calcularEdad = (fecha) => {
     const hoy = new Date()
     const fechaNacimiento = new Date(fecha)
@@ -52,7 +52,7 @@ const Casos = () => {
               <ListGroup variant='flush'>
                 <ListGroup.Item>
                   Domicilio: <Badge variant='outline-info'>🏠{caso.domicilio}</Badge>
-                  <Badge bg='light'>📫{caso.comuna}</Badge>
+                  <Badge bg='secondary'>📫{caso.comuna}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   Redes: <Badge bg='secondary'>🎒{caso.curso}</Badge> en
@@ -65,7 +65,7 @@ const Casos = () => {
                   <Badge bg='info'>motivo: ❤️‍🩹{caso.motivo}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  Fecha de ingreso a PRM: <Badge bg='light'>{formatoFecha(caso.fecha)}</Badge> -
+                  Fecha de ingreso a PRM: <Badge bg='secondary'>{formatoFecha(caso.fecha)}</Badge> -
                   Tratante: <Badge bg='info'>⚕️{caso.profesional}</Badge>
                 </ListGroup.Item>
               </ListGroup>
@@ -83,7 +83,7 @@ const Casos = () => {
                   <Badge bg='info'>💪{caso.labores}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleClick(caso.id, caso.nombre)}>📎Conseguir formatos</Button>
+                  <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, nombreProfesional.rol)}>📎Conseguir formatos</Button>
                 </ListGroup.Item>
               </ListGroup>
             </Accordion.Body>

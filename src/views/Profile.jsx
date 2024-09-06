@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Context from '../contexts/context.js'
+import ModalFormatos from '../components/ModalFormatos.jsx'
 import useHandle from '../hooks/useHandle.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -119,7 +120,8 @@ const Profile = () => {
               <ListGroup variant='flush'>
                 {getPendientes.map((pendiente) => (
                   <ListGroup.Item key={pendiente.id}>
-                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, 2)}>{pendiente.nombre}</Button>
+                    <h2>{pendiente.fechaInformePendiente}</h2>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(pendiente.id, pendiente.nombre, nombreProfesional.rol)}>{pendiente.nombre}</Button>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -131,6 +133,7 @@ const Profile = () => {
               <ListGroup variant='flush'>
                 {getAtrasos.map((atrasado) => (
                   <ListGroup.Item key={atrasado.id}>
+                    <h2>{atrasado.fechaInformePendiente}</h2>
                     <Button variant='outline-info' onClick={() => handleClickFormato(atrasado.id, atrasado.nombre, 2)}>{atrasado.nombre}</Button>
                   </ListGroup.Item>
                 ))}
@@ -139,6 +142,7 @@ const Profile = () => {
           </Card>
         </>
       )}
+      <ModalFormatos />
     </Container>
   )
 }

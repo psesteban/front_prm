@@ -25,7 +25,6 @@ const useHandle = () => {
     setAddNna,
     addNna,
     setDataNna,
-    generaWord,
     selectId,
     selectNna,
     setListas,
@@ -93,7 +92,6 @@ const useHandle = () => {
       handleShowFormato()
     }
   }
-  const handleClickDescarga = async (tipo) => await generaWord(tipo, 3, 'tratante', 'ts')
 
   const handleAddNNa = async (etapa) => {
     setLitleCharge(true)
@@ -376,7 +374,7 @@ const useHandle = () => {
   const getDataForI = async (id, rol) => {
     const params = { id }
     let endpoint = null
-    if (rol === 1) endpoint = ENDPOINT.formatos
+    if (rol === 3) endpoint = ENDPOINT.formatos
     else endpoint = ENDPOINT.data
     await axios.get(endpoint, { params, headers: { Authorization: `Bearer ${token}` } })
       .then((result) => {
@@ -482,7 +480,6 @@ const useHandle = () => {
     handleClick,
     handleClickFormato,
     handleAdult,
-    handleClickDescarga,
     handleAddNNa,
     onSubmitAdulto,
     onSubmitChange,
