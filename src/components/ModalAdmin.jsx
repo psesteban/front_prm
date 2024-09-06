@@ -2,7 +2,6 @@ import { useContext } from 'react'
 import Context from '../contexts/context.js'
 import { Button, Modal, Dropdown, Form, InputGroup, Col, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import ModalFormatos from './ModalFormatos.jsx'
 import useHandle from '../hooks/useHandle.jsx'
 
 export const ModalAddNew = () => {
@@ -423,7 +422,6 @@ export const ModalInforme = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <ModalFormatos />
     </>
   )
 }
