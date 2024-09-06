@@ -51,7 +51,7 @@ const Casos = () => {
               </ListGroup>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
-                  Domicilio: <Badge variant='success'>🏠{caso.domicilio}</Badge>
+                  Domicilio: <Badge bg='success'>🏠{caso.domicilio}</Badge>
                   <Badge bg='success'>📫{caso.comuna}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -60,9 +60,9 @@ const Casos = () => {
                   <Badge bg='warning'>🧑‍⚕️{caso.salud}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  Causa: <Badge variant='secondary'>🏛️{caso.juzgado}</Badge> -
+                  Causa: <Badge bg='secondary'>🏛️{caso.juzgado}</Badge> -
                   <Badge bg='success'>🗃️{caso.rit}</Badge> -
-                  <Badge bg='Info'>motivo: ❤️‍🩹{caso.motivo}</Badge>
+                  <Badge bg='info'>motivo: ❤️‍🩹{caso.motivo}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   Fecha de ingreso a PRM: <Badge bg='dark'>{formatoFecha(caso.fecha)}</Badge> -
@@ -79,7 +79,7 @@ const Casos = () => {
                   <Badge bg='warning'>🪢{caso.parentesco}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Badge bg='Info'>📳{caso.telefono}</Badge>
+                  <Badge bg='info'>📳{caso.telefono}</Badge>
                   <Badge bg='secondary'>💪{caso.labores}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
