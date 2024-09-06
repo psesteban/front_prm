@@ -1,7 +1,7 @@
 import Context from '../contexts/context.js'
 import useHandle from '../hooks/useHandle.jsx'
 import { ModalInforme } from '../components/ModalAdmin.jsx'
-import ModalFormatos from './ModalFormatos.jsx'
+import ModalFormatos from '../components/ModalFormatos.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { Container, Card, ListGroup, Button } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -98,13 +98,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-              </ListGroup>
+                </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-              </ListGroup>}
+                </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>
