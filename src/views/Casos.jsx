@@ -75,7 +75,7 @@ const Casos = () => {
                   <Badge bg='dark'>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Badge bg='warning'>Rut: {caso.runAdulto}</Badge>
+                  <Badge bg='secondary'>Rut: {caso.runAdulto}</Badge>
                   <Badge bg='warning'>🪢{caso.parentesco}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
