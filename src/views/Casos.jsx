@@ -41,46 +41,46 @@ const Casos = () => {
           <Accordion.Item eventKey={index} key={index}>
             <Accordion.Header>{caso.nombre}</Accordion.Header>
             <Accordion.Body>
-              <Badge bg='primary'>{calcularEdad(caso.edad)} al {formatoFecha(caso.edad)}</Badge>
+              <Badge bg='dark'>{calcularEdad(caso.edad)} al {formatoFecha(caso.edad)}</Badge>
               <Badge bg='secondary'> Rut: {caso.rut}</Badge>
-              <Badge bg='info'>{caso.genero}</Badge>
+              <Badge bg='warning'>{caso.genero}</Badge>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
-                  <Badge> Nacionalidad {caso.nacionalidad}</Badge>
+                  <Badge bg='warning'> Nacionalidad {caso.nacionalidad}</Badge>
                 </ListGroup.Item>
               </ListGroup>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
-                  Domicilio: <Badge variant='outline-info'>🏠{caso.domicilio}</Badge>
-                  <Badge bg='secondary'>📫{caso.comuna}</Badge>
+                  Domicilio: <Badge variant='success'>🏠{caso.domicilio}</Badge>
+                  <Badge bg='success'>📫{caso.comuna}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  Redes: <Badge bg='secondary'>🎒{caso.curso}</Badge> en
+                  Redes: <Badge bg='success'>🎒{caso.curso}</Badge> en
                   <Badge bg='success'>🏫{caso.educacional}</Badge> -
                   <Badge bg='warning'>🧑‍⚕️{caso.salud}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  Causa: <Badge variant='outline-info'>🏛️{caso.juzgado}</Badge> -
+                  Causa: <Badge variant='secondary'>🏛️{caso.juzgado}</Badge> -
                   <Badge bg='success'>🗃️{caso.rit}</Badge> -
-                  <Badge bg='info'>motivo: ❤️‍🩹{caso.motivo}</Badge>
+                  <Badge bg='Info'>motivo: ❤️‍🩹{caso.motivo}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  Fecha de ingreso a PRM: <Badge bg='secondary'>{formatoFecha(caso.fecha)}</Badge> -
-                  Tratante: <Badge bg='info'>⚕️{caso.profesional}</Badge>
+                  Fecha de ingreso a PRM: <Badge bg='dark'>{formatoFecha(caso.fecha)}</Badge> -
+                  Tratante: <Badge bg='warning'>⚕️{caso.profesional}</Badge>
                 </ListGroup.Item>
               </ListGroup>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
                   Adulto Responsable: <Badge bg='success'> {caso.adulto}</Badge>
-                  <Badge bg='info'>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Badge>
+                  <Badge bg='dark'>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Badge bg='warning'>Rut: {caso.runAdulto}</Badge>
-                  <Badge bg='info'>🪢{caso.parentesco}</Badge>
+                  <Badge bg='warning'>🪢{caso.parentesco}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Badge bg='success'>📳{caso.telefono}</Badge>
-                  <Badge bg='info'>💪{caso.labores}</Badge>
+                  <Badge bg='Info'>📳{caso.telefono}</Badge>
+                  <Badge bg='secondary'>💪{caso.labores}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, nombreProfesional.rol)}>📎Conseguir formatos</Button>
