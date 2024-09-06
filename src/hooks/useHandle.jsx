@@ -422,14 +422,14 @@ const useHandle = () => {
       })
   }
   const onSubmitLogros = async (input) => {
-    const data = {
+    const datos = {
       id: input.id,
       logro: input.logro,
       medalla: input.medalla,
       contenido: input.contenido
     }
 
-    await axios.post(ENDPOINT.logros, { data }, { headers: { Authorization: `Bearer ${token}` } })
+    await axios.post(ENDPOINT.logros, { datos }, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => {
         if (r.data) {
           notifyXpress('Logro ingresado')
