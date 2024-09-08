@@ -11,7 +11,7 @@ const useProfesional = () => {
   const [duplas, setDuplas] = useState(['duplas'])
   const [isLoading, setIsLoading] = useState(false)
   const [tipo, setTipo] = useState(0)
-  const [sesion, setSesion] = useState(false)
+  const [sesion, setSesion] = useState(true)
 
   // modal
   const [listas, setListas] = useState(null)

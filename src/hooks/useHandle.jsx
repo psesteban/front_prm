@@ -25,7 +25,6 @@ const useHandle = () => {
     setAddNna,
     addNna,
     setDataNna,
-    generaWord,
     selectId,
     selectNna,
     setListas,
@@ -36,7 +35,8 @@ const useHandle = () => {
     setShowAdultChange,
     setHonor,
     setPersonas,
-    setShowLogros
+    setShowLogros,
+    setSesion
   } = useContext(Context)
 
   // configuración del modal
@@ -92,7 +92,6 @@ const useHandle = () => {
       handleShowFormato()
     }
   }
-  const handleClickDescarga = async (tipo) => await generaWord(tipo, 3, 'tratante', 'ts')
 
   const handleAddNNa = async (etapa) => {
     setLitleCharge(true)
@@ -191,7 +190,13 @@ const useHandle = () => {
 
   const onSubmitChange = async ({ id, parentesco, responsable }) => await axios.put(ENDPOINT.lista, { id, parentesco, responsable }, {
     headers: { Authorization: `Bearer ${token}` }
-  }).then((r) => handleCloseChange())
+  }).then((r) => {
+    if (r.data) {
+      notifyXpress('dato de adulto responsable modificado')
+      handleCloseChange()
+    }
+  }
+  )
 
   const onSubmitChangeNna = async (input) => {
     const id = selectId
@@ -209,7 +214,12 @@ const useHandle = () => {
     }
     await axios.put(ENDPOINT.dato, { datos }, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then((r) => handleCloseNnaChange())
+    }).then((r) => {
+      if (r.data) {
+        notifyXpress('dato modificado con exito')
+        handleCloseNnaChange()
+      }
+    })
   }
   const onSubmitChangeAdult = async (input) => {
     const id = selectId
@@ -227,7 +237,12 @@ const useHandle = () => {
     }
     await axios.put(ENDPOINT.adulto, { datos }, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then((r) => handleCloseAdultChange())
+    }).then((r) => {
+      if (r.data) {
+        notifyXpress('dato modificado con exito')
+        handleCloseAdultChange()
+      }
+    })
   }
 
   const okButton = async () => {
@@ -261,10 +276,11 @@ const useHandle = () => {
     notifyIngreso(data.nombre)
     handleCloseNna()
   })
-  const postAnalisis = async (id, date, resumen, url) => await axios.post(ENDPOINT.resumen, { id, date, resumen, url }, {
+  const postAnalisis = async (id, date, resumen, url) => await axios.put(ENDPOINT.resumen, { id, date, resumen, url }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
     if (r.data) {
+      notifyXpress('Análisis ingresado')
       notifyXpress('Análisis ingresado')
       handleClose()
     } else alert(`Error: ${r.data.message}`)
@@ -350,11 +366,16 @@ const useHandle = () => {
 
   const putData = async (id) => await axios.put(ENDPOINT.admin, { id }, {
     headers: { Authorization: `Bearer ${token}` }
-  })
+  }).then((r) => {
+    if (r.data) {
+      notifyXpress('Listo')
+    } else alert(`Error: ${r.data.message}`)
+  }).catch((error) => console.error(error))
+
   const getDataForI = async (id, rol) => {
     const params = { id }
     let endpoint = null
-    if (rol === 1) endpoint = ENDPOINT.formatos
+    if (rol === 3) endpoint = ENDPOINT.formatos
     else endpoint = ENDPOINT.data
     await axios.get(endpoint, { params, headers: { Authorization: `Bearer ${token}` } })
       .then((result) => {
@@ -403,6 +424,7 @@ const useHandle = () => {
   }
   const onSubmitLogros = async (input) => {
     const datos = {
+    const datos = {
       id: input.id,
       logro: input.logro,
       medalla: input.medalla,
@@ -439,10 +461,12 @@ const useHandle = () => {
     }).then((result) => {
       setProfesional(result.data)
       setIsLoading(false)
+      setSesion(true)
     }).catch((error) => {
       console.error(error)
       window.sessionStorage.removeItem('token')
       setProfesional(null)
+      setSesion(false)
       navigate('/')
     }
     )
@@ -462,7 +486,6 @@ const useHandle = () => {
     handleClick,
     handleClickFormato,
     handleAdult,
-    handleClickDescarga,
     handleAddNNa,
     onSubmitAdulto,
     onSubmitChange,

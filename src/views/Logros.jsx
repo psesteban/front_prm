@@ -13,7 +13,7 @@ const Logros = () => {
           <Accordion.Item key={index} eventKey={index}>
             <Accordion.Header>{dato.medalla}{dato.logro}</Accordion.Header>
             <Accordion.Body>
-              {dato.logro}
+              {dato.contenido}
             </Accordion.Body>
           </Accordion.Item>
         ))}

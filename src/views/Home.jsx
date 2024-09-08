@@ -12,11 +12,13 @@ const Home = () => {
   const rol = window.sessionStorage.getItem('sesionprm')
 
   useEffect(() => {
-    if (token || sesion) {
-      if (rol === '3') {
-        navigate('/admin')
-      } else {
-        navigate('/perfil')
+    if (sesion) {
+      if (token) {
+        if (rol === '3') {
+          navigate('/admin')
+        } else {
+          navigate('/perfil')
+        }
       }
     }
   }, [])

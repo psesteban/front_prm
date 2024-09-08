@@ -7,12 +7,13 @@ const ModalFormatos = () => {
   const {
     showFormato,
     selectNna,
-    isLoadData
+    isLoadData,
+    generaWord,
+    nombreProfesional
   } = useContext(Context)
 
   const {
-    handleCloseFormato,
-    handleClickDescarga
+    handleCloseFormato
   } = useHandle()
 
   return (
@@ -24,13 +25,13 @@ const ModalFormatos = () => {
       <Modal.Footer>
         {!isLoadData
           ? <>
-            <Button variant='outline-primary' onClick={() => handleClickDescarga(1)}> El PII del Diagnóstico</Button>{' '}
-            <Button variant='outline-success' onClick={() => handleClickDescarga(2)}> Formato de PII Tratamiento</Button>
+            <Button variant='outline-primary' onClick={() => generaWord(1, nombreProfesional.rol, nombreProfesional.nombre, nombreProfesional.dupla)}> El PII del Diagnóstico</Button>{' '}
+            <Button variant='outline-success' onClick={() => generaWord(2, nombreProfesional.rol, nombreProfesional.nombre, nombreProfesional.dupla)}> Formato de PII Tratamiento</Button>
             <Dropdown.Divider />
-            <Button variant='info' onClick={() => handleClickDescarga(3)}> Formato de IPD</Button>{' '}
-            <Button variant='success' onClick={() => handleClickDescarga(4)}> Formato de IA</Button>
+            <Button variant='info' onClick={() => generaWord(3, nombreProfesional.rol, nombreProfesional.nombre, nombreProfesional.dupla)}> Formato de IPD</Button>{' '}
+            <Button variant='success' onClick={() => generaWord(4, nombreProfesional.rol, nombreProfesional.nombre, nombreProfesional.dupla)}> Formato de IA</Button>
             <Dropdown.Divider />
-            <Button variant='danger' onClick={() => handleClickDescarga(5)}> Formato de prórroga</Button>
+            <Button variant='danger' onClick={() => generaWord(5, nombreProfesional.rol, nombreProfesional.nombre, nombreProfesional.dupla)}> Formato de prórroga</Button>
             </>
           : <Button variant='primary' disabled>
             <Spinner
