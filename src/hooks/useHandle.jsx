@@ -5,7 +5,6 @@ import axios from 'axios'
 import accounting from 'accounting'
 import { ENDPOINT } from '../config/constans.js'
 import { useNavigate } from 'react-router-dom'
-import { getDatosCredencial } from '../../../server/src/controllers/usuarios.js'
 
 const useHandle = () => {
   const navigate = useNavigate()
