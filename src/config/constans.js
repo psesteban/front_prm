@@ -1,4 +1,4 @@
-export const URLBASE = 'https://serverprm-94b6ts0xc-psestebans-projects.vercel.app'
+export const URLBASE = 'https://prmserver.vercel.app'
 // 'https://server-as9p.onrender.com' o 'http://localhost:3000'
 
 export const ENDPOINT = {
