@@ -36,7 +36,6 @@ const useNotify = () => {
     progress: undefined,
     theme: 'dark'
   })
-
   return {
     notifyIngreso,
     notify,

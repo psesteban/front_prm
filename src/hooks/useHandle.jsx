@@ -281,6 +281,7 @@ const useHandle = () => {
   }).then((r) => {
     if (r.data) {
       notifyXpress('Análisis ingresado')
+      notifyXpress('Análisis ingresado')
       handleClose()
     } else alert(`Error: ${r.data.message}`)
   }).catch((error) => console.error(error))
@@ -430,11 +431,13 @@ const useHandle = () => {
     }
 
     await axios.post(ENDPOINT.logros, { datos }, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => {
-        if (r.data) {
-          notifyXpress('Logro ingresado')
-        } else alert(`Error: ${r.data.message}`)
-      }).catch((error) => console.error(error))
+      .then((result) => {
+        if (result.data) notifyXpress('logro subido')
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
     setShowLogros(false)
   }
 
@@ -442,11 +445,13 @@ const useHandle = () => {
     const params = { id }
 
     await axios.delete(ENDPOINT.logros, { params, headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => {
-        if (r.data) {
-          notifyXpress('Logro borrado')
-        } else alert(`Error: ${r.data.message}`)
-      }).catch((error) => console.error(error))
+      .then((result) => {
+        if (result.data) notifyXpress('logro borrado')
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
   }
   const getProfesionalData = async () => {
     setIsLoading(true)

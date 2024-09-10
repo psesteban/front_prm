@@ -88,7 +88,7 @@ const Editar = () => {
               <ListGroup variant='flush'>
                 {datosPersona.map((dato, index) => (
                   <ListGroup.Item key={index}>
-                    <h2>{dato.logro} {dato.medalla}</h2>
+                    <h4>{dato.logro} {dato.medalla}</h4>
                     <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
                   </ListGroup.Item>
                 ))}
