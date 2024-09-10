@@ -247,7 +247,7 @@ const useHandle = () => {
 
   const okButton = async () => {
     await putData(selectId).then((result) => {
-      if (result.data === true) {
+      if (result) {
         notify(selectNna, getProfesional.nombre)
         setSelectId(null)
         setSelectNna(null)
@@ -370,6 +370,7 @@ const useHandle = () => {
     if (r.data) {
       notifyXpress('Listo')
     } else alert(`Error: ${r.data.message}`)
+    return true
   }).catch((error) => console.error(error))
 
   const getDataForI = async (id, rol) => {
