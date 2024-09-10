@@ -201,7 +201,6 @@ const useHandle = () => {
   const onSubmitChangeNna = async (input) => {
     const id = selectId
     let data = input
-    console.log(input)
     if (tipo === 2) {
       const rutParteA = parseInt(input.rut)
       const rutDigito = input.rutDigito
@@ -216,7 +215,8 @@ const useHandle = () => {
     await axios.put(ENDPOINT.dato, { datos }, {
       headers: { Authorization: `Bearer ${token}` }
     }).then((r) => {
-      if (r.data) {
+      console.log(r)
+      if (r.status === 200) {
         notifyXpress('dato modificado con exito')
         handleCloseNnaChange()
       }
