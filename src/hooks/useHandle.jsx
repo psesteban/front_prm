@@ -5,6 +5,7 @@ import axios from 'axios'
 import accounting from 'accounting'
 import { ENDPOINT } from '../config/constans.js'
 import { useNavigate } from 'react-router-dom'
+import { getDatosCredencial } from '../../../server/src/controllers/usuarios.js'
 
 const useHandle = () => {
   const navigate = useNavigate()
@@ -270,10 +271,10 @@ const useHandle = () => {
       handleAddNNa(4)
     }
   })
-  const postNna = async (data) => await axios.post(ENDPOINT.nna, { data }, {
+  const postNna = async (datos) => await axios.post(ENDPOINT.nna, { getDatosCredencial }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
-    notifyIngreso(data.nombre)
+    notifyIngreso(datos.nombre)
     handleCloseNna()
   })
   const postAnalisis = async (id, date, resumen, url) => await axios.put(ENDPOINT.resumen, { id, date, resumen, url }, {
