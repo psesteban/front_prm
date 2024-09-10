@@ -424,7 +424,6 @@ const useHandle = () => {
   }
   const onSubmitLogros = async (input) => {
     const datos = {
-    const datos = {
       id: input.id,
       logro: input.logro,
       medalla: input.medalla,
