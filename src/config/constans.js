@@ -1,5 +1,5 @@
-export const URLBASE = 'https://prmserver.vercel.app'
-// 'https://server-as9p.onrender.com' o 'http://localhost:3000'
+export const URLBASE = 'http://localhost:3000'
+// 'https://prmserver.vercel.app' o 'http://localhost:3000'
 
 export const ENDPOINT = {
   user: `${URLBASE}/usuario`,

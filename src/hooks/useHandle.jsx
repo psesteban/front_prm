@@ -201,6 +201,7 @@ const useHandle = () => {
   const onSubmitChangeNna = async (input) => {
     const id = selectId
     let data = input
+    console.log(input)
     if (tipo === 2) {
       const rutParteA = parseInt(input.rut)
       const rutDigito = input.rutDigito
@@ -273,8 +274,10 @@ const useHandle = () => {
   const postNna = async (datos) => await axios.post(ENDPOINT.nna, { datos }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
-    notifyIngreso(datos.nombre)
-    handleCloseNna()
+    if (r.data) {
+      notifyIngreso(datos.nombre)
+      handleCloseNna()
+    }
   })
   const postAnalisis = async (id, date, resumen, url) => await axios.put(ENDPOINT.resumen, { id, date, resumen, url }, {
     headers: { Authorization: `Bearer ${token}` }
