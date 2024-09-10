@@ -270,7 +270,7 @@ const useHandle = () => {
       handleAddNNa(4)
     }
   })
-  const postNna = async (datos) => await axios.post(ENDPOINT.nna, { getDatosCredencial }, {
+  const postNna = async (datos) => await axios.post(ENDPOINT.nna, { datos }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
     notifyIngreso(datos.nombre)
