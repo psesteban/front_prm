@@ -71,32 +71,32 @@ const Editar = () => {
       getListas()
       getProfesionales(getProfesional.id)
       getLogros(getProfesional.id)
-      console.log(honor)
       agrupar().then((result) => setListas(result))
     }
   }, [])
 
   return (
     <>
-      <h1>Profesionales</h1>
-      <Button variant='outline-success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
-      <Accordion defaultActiveKey='0'>
-        {Object.entries(listas).map(([nombre, datosPersona], index) => (
-          <Accordion.Item key={index} eventKey={index}>
-            <Accordion.Header>{nombre}</Accordion.Header>
-            <Accordion.Body>
-              <ListGroup variant='flush'>
-                {datosPersona.map((dato, index) => (
-                  <ListGroup.Item key={index}>
-                    <h4>{dato.logro} {dato.medalla}</h4>
-                    <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
+      {listas && (<> <h1>Profesionales</h1>
+        <Button variant='outline-success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
+        <Accordion defaultActiveKey='0'>
+          {Object.entries(listas).map(([nombre, datosPersona], index) => (
+            <Accordion.Item key={index} eventKey={index}>
+              <Accordion.Header>{nombre}</Accordion.Header>
+              <Accordion.Body>
+                <ListGroup variant='flush'>
+                  {datosPersona.map((dato, index) => (
+                    <ListGroup.Item key={index}>
+                      <h4>{dato.logro} {dato.medalla}</h4>
+                      <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+                  </>)}
       <h1>Casos</h1>
       <DropdownButton
         id='dropdown-item-button' title={litleCharge

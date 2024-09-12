@@ -194,6 +194,7 @@ const useHandle = () => {
     if (r.data) {
       notifyXpress('dato de adulto responsable modificado')
       handleCloseChange()
+      getProfesionalData()
     }
   }
   )
@@ -219,6 +220,7 @@ const useHandle = () => {
       if (r.status === 200) {
         notifyXpress('dato modificado con exito')
         handleCloseNnaChange()
+        getProfesionalData()
       }
     })
   }
@@ -385,6 +387,7 @@ const useHandle = () => {
       .then((result) => {
         setIsLoadData(false)
         setDataNna(result.data)
+        console.log(result.data)
       })
       .catch((error) => {
         setIsLoadData(false)

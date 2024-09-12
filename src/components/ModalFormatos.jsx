@@ -15,7 +15,6 @@ const ModalFormatos = () => {
   const {
     handleCloseFormato
   } = useHandle()
-
   return (
     <Modal show={showFormato} onHide={handleCloseFormato}>
       <Modal.Header closeButton>

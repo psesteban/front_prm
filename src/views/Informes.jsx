@@ -1,5 +1,6 @@
 import Context from '../contexts/context.js'
 import { useContext, useState } from 'react'
+import useHandle from '../hooks/useHandle.jsx'
 import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap'
 import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker'
 import { ENDPOINT } from '../config/constans.js'
@@ -22,7 +23,7 @@ const Profile = () => {
   const [selectNna, setSelectNna] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [orderByName, setOrderByName] = useState(false)
-
+  const { getProfesionalData } = useHandle()
   const notify = (message) => toast.success(message, {
     position: 'top-right',
     autoClose: 5000,
@@ -107,6 +108,7 @@ const Profile = () => {
       const mensaje = `fecha actualizada al 🆕 ${date} 📅`
       notify(mensaje)
       handleClose()
+      getProfesionalData()
     } catch (error) {
 
     }
@@ -186,9 +188,9 @@ const Profile = () => {
                         <Button onClick={() => putDataDate(selectId)}>Guardar cambios</Button>
                       </Modal.Footer>
                     </Modal>
-                    </div>
-                  : <div> {formatedDate(caso.prorroga)} 🔚</div>}
                   </div>
+                  : <div> {formatedDate(caso.prorroga)} 🔚</div>}
+                </div>
                 : <p>no corresponde</p>}
               </td>
               {getProfesional.rol ? <td><Button variant='danger' onClick={() => handleDelete(caso.id, caso.nombre)}>X</Button></td> : <></>}
