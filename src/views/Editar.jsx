@@ -96,7 +96,7 @@ const Editar = () => {
             </Accordion.Item>
           ))}
         </Accordion>
-                  </>)}
+      </>)}
       <h1>Casos</h1>
       <DropdownButton
         id='dropdown-item-button' title={litleCharge
@@ -161,7 +161,7 @@ const Editar = () => {
                   <Button variant='outline-info' onClick={() => handleCambio(20, caso.idAdulto)}>💪{caso.labores}</Button>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, 1)}>📎Conseguir formatos</Button>
+                  <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, 3)}>📎Conseguir formatos</Button>
                 </ListGroup.Item>
               </ListGroup>
             </Accordion.Body>
