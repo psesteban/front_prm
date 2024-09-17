@@ -18,7 +18,7 @@ const Logros = () => {
           </Accordion.Item>
         ))}
       </Accordion>
-
+      <h3>Mensajes Urgentes</h3>
     </>
   )
 }
