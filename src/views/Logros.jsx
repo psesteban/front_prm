@@ -1,9 +1,11 @@
 import Context from '../contexts/context.js'
 import { useContext } from 'react'
-import { Accordion } from 'react-bootstrap'
+import { Accordion, ListGroup, Button } from 'react-bootstrap'
+import useHandle from '../hooks/useHandle.jsx'
 
 const Logros = () => {
-  const { honor } = useContext(Context)
+  const { honor, tareas } = useContext(Context)
+  const { palancaTareaCompletada } = useHandle()
 
   return (
     <>
@@ -18,7 +20,21 @@ const Logros = () => {
           </Accordion.Item>
         ))}
       </Accordion>
-      <h3>Mensajes Urgentes</h3>
+      <h1 className='bg-white'>📈</h1>
+      {tareas && (<div>
+        <h3 className='bg-white'>Compromisos Urgentes</h3>
+        <ListGroup as='ul'>
+          {tareas.map((tarea, index) => (
+            tarea.activa
+              ? <ListGroup.Item as='li' key={index} active>
+                {tarea.tarea}
+                <Button variant='outline-info' onClick={() => palancaTareaCompletada(tarea.id)}>⏹️</Button>
+                </ListGroup.Item>
+              : <ListGroup.Item as='li' key={index} disabled>
+                {tarea.tarea}✅
+                </ListGroup.Item>))}
+        </ListGroup>
+      </div>)}
     </>
   )
 }

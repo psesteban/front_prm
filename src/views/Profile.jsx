@@ -15,7 +15,7 @@ import './Profile.css'
 const Profile = () => {
   const navigate = useNavigate()
   const { getProfesional, setProfesional, filterAtrasos, getPendientes, getAtrasos, setNombreProfesional, nombreProfesional, setSesion } = useContext(Context)
-  const { handleClickFormato, getLogro } = useHandle()
+  const { handleClickFormato, getLogro, getTareas } = useHandle()
   const token = window.sessionStorage.getItem('token')
   const [isLoading, setIsLoading] = useState(false)
   const [logro, setLogro] = useState(100)
@@ -63,6 +63,7 @@ const Profile = () => {
         if (result) {
           setNombreProfesional({ nombre: result.nombre, rol: result.idRol, dupla: result.dupla, id: result.id })
           getLogro(result.id)
+          getTareas(result.id)
         }
       })
     }

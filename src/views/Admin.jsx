@@ -12,7 +12,7 @@ import './Profile.css'
 
 const Admin = () => {
   const { getProfesional, isLoading, filterAtrasos, getPendientes, getAtrasos, atrasosFiltrados, pendientesFiltrados, totalCasos, duplas, setDuplas, setNombreProfesional } = useContext(Context)
-  const { handleClick, handleClickFormato, getProfesionalData, getLogros } = useHandle()
+  const { handleClick, handleClickFormato, getProfesionalData, getLogros, getTareasAdmin } = useHandle()
   const [logro, setLogro] = useState(100)
   const [filter, setFilter] = useState(false)
   const [select, setSelect] = useState('')
@@ -98,13 +98,13 @@ const Admin = () => {
                   <ListGroup.Item key={randomId()}>
                     <Button variant='primary' onClick={() => filtro(dupla)}>{dupla}</Button>
                   </ListGroup.Item>))}
-              </ListGroup>
+                </ListGroup>
               : <ListGroup variant='flush'>
                 <ListGroup.Item className='filtro'>
                   <Button variant='success'> Dupla de: {select}</Button>
                   <Button variant='danger' onClick={() => quitarFiltro()}>❌</Button>
                 </ListGroup.Item>
-              </ListGroup>}
+                </ListGroup>}
           </Card>
           <Card className='pendientes'>
             <Card.Body>

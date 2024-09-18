@@ -1,4 +1,4 @@
-export const URLBASE = 'https://prmserver.vercel.app'
+export const URLBASE = 'http://localhost:3000'
 // 'https://prmserver.vercel.app' o 'http://localhost:3000'
 
 export const ENDPOINT = {
@@ -12,5 +12,7 @@ export const ENDPOINT = {
   nna: `${URLBASE}/nna`,
   resumen: `${URLBASE}/resumen`,
   dato: `${URLBASE}/dato`,
-  logros: `${URLBASE}/logros`
+  logros: `${URLBASE}/logros`,
+  tareas: `${URLBASE}/tareas`,
+  task: `${URLBASE}/task`
 }

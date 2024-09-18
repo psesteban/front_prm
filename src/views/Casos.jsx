@@ -1,6 +1,6 @@
 import Context from '../contexts/context.js'
 import useHandle from '../hooks/useHandle.jsx'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import ModalFormatos from '../components/ModalFormatos.jsx'
 
 import { Accordion, ListGroup, Button, Badge } from 'react-bootstrap'
@@ -8,7 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 const Casos = () => {
   const { getProfesional, formatoFecha, nombreProfesional } = useContext(Context)
-  const { handleClickFormato, getListas } = useHandle()
+  const { handleClickFormato } = useHandle()
   const calcularEdad = (fecha) => {
     const hoy = new Date()
     const fechaNacimiento = new Date(fecha)
@@ -27,12 +27,6 @@ const Casos = () => {
       return 0
     }
   })
-
-  useEffect(() => {
-    if (getProfesional) {
-      getListas()
-    }
-  }, [])
 
   return (
     <>
