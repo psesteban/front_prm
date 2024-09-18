@@ -6,9 +6,11 @@ import ModalLogros from '../components/ModalLogros.jsx'
 import ModalFormatos from '../components/ModalFormatos.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { Spinner, Dropdown, DropdownButton, Accordion, Button, ListGroup } from 'react-bootstrap'
+import ModalTareas from '../components/ModalTareas.jsx'
 
 const Editar = () => {
   const [listas, setListas] = useState({})
+  const [listaDos, setListaDos] = useState({})
 
   const {
     getProfesional,
@@ -19,7 +21,9 @@ const Editar = () => {
     setSelectId,
     formatoFecha,
     setShowLogros,
-    honor
+    honor,
+    tareas,
+    setShowTareas
   } = useContext(Context)
   const {
     handleAddNNa,
@@ -27,7 +31,10 @@ const Editar = () => {
     handleClickFormato,
     getProfesionales,
     getLogros,
-    deleteLogro
+    deleteLogro,
+    deleteTarea,
+    activar,
+    getTareasAdmin
   } = useHandle()
 
   const handleCambio = (tipo, id) => {
@@ -66,19 +73,31 @@ const Editar = () => {
     }, {})
     return grupos
   }
+  const agruparTareas = async () => {
+    const grupos = tareas.reduce((acc, persona) => {
+      const nombre = persona.nombre
+      acc[nombre] = acc[nombre] || []
+      acc[nombre].push(persona)
+      return acc
+    }, {})
+    return grupos
+  }
   useEffect(() => {
     if (getProfesional.id) {
       getListas()
       getProfesionales(getProfesional.id)
       getLogros(getProfesional.id)
+      getTareasAdmin(getProfesional.id)
       agrupar().then((result) => setListas(result))
+      agruparTareas().then((result) => setListaDos(result))
     }
   }, [])
 
   return (
     <>
       {listas && (<> <h1>Profesionales</h1>
-        <Button variant='outline-success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
+        <h3>Logros</h3>
+        <Button variant='success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
         <Accordion defaultActiveKey='0'>
           {Object.entries(listas).map(([nombre, datosPersona], index) => (
             <Accordion.Item key={index} eventKey={index}>
@@ -89,6 +108,25 @@ const Editar = () => {
                     <ListGroup.Item key={index}>
                       <h4>{dato.logro} {dato.medalla}</h4>
                       <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+        <h3>Tareas</h3>
+        <Button variant='outline-success' onClick={() => setShowTareas(true)}>Agregar Tarea</Button>
+        <Accordion defaultActiveKey='0'>
+          {Object.entries(listaDos).map(([nombre, datosPersona], index) => (
+            <Accordion.Item key={index} eventKey={index}>
+              <Accordion.Header>{nombre}</Accordion.Header>
+              <Accordion.Body>
+                <ListGroup variant='flush'>
+                  {datosPersona.map((dato, index) => (
+                    <ListGroup.Item key={index}>
+                      <h4>{dato.tarea} {dato.activa ? <Button variant='outline-info' onClick={() => activar(dato.id)}>Activar</Button> : '⏩'}</h4>
+                      <Button variant='outline-danger' onClick={() => deleteTarea(dato.id)}> Eliminar</Button>
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
@@ -172,6 +210,7 @@ const Editar = () => {
       <ModalCambios />
       <ModalFormatos />
       <ModalLogros />
+      <ModalTareas />
     </>
   )
 }

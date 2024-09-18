@@ -36,7 +36,10 @@ const useHandle = () => {
     setHonor,
     setPersonas,
     setShowLogros,
-    setSesion
+    setSesion,
+    setTareas,
+    tareas,
+    setShowTareas
   } = useContext(Context)
 
   // configuración del modal
@@ -49,6 +52,8 @@ const useHandle = () => {
   const handleCloseLogro = () => setShowLogros(false)
   const handleShowChange = () => setShowNewAd(true)
   const handleCloseChange = () => setShowNewAd(false)
+  const handleCloseTareas = () => setShowTareas(false)
+
   const handleCloseFormato = () => {
     setDataNna(null)
     setSelectId(null)
@@ -199,6 +204,86 @@ const useHandle = () => {
   }
   )
 
+  const palancaTareaCompletada = async (id) => {
+    await axios.put(ENDPOINT.tareas, { id }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((r) => {
+      if (r.data) {
+        setTareas(tareas => {
+          return tareas.map(tarea => {
+            if (tarea.id === id) {
+              return { ...tarea, activa: !tarea.activa }
+            }
+            return tarea
+          })
+        })
+      }
+    })
+  }
+  const palancaActivarTarea = async (idTarea) => {
+    await axios.put(ENDPOINT.task, { idTarea }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((r) => {
+      if (r.data) {
+        notifyXpress('activando la Tarea')
+      }
+    })
+  }
+  const getTareas = async (id) => {
+    const params = { id }
+    await axios.get(ENDPOINT.tareas, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setTareas(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
+  const getTareasAdmin = async (id) => {
+    const params = { id }
+    await axios.get(ENDPOINT.task, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        setTareas(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
+  const onSubmitTareas = async (input) => {
+    const tareas = {
+      id: input.id,
+      tarea: input.tarea
+    }
+
+    await axios.post(ENDPOINT.task, { tareas }, { headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        if (result.status === 200) notifyXpress('tarea subida')
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+    setShowTareas(false)
+  }
+  const deleteTarea = async (id) => {
+    const params = { id }
+
+    await axios.delete(ENDPOINT.task, { params, headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        if (result.data) {
+          setTareas(tareas => {
+            return tareas.filter(tarea => tarea.id !== id)
+          })
+          notifyXpress('tarea borrada')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+  }
   const onSubmitChangeNna = async (input) => {
     const id = selectId
     let data = input
@@ -508,7 +593,14 @@ const useHandle = () => {
     deleteLogro,
     onSubmitLogros,
     getProfesionales,
-    handleCloseLogro
+    handleCloseLogro,
+    palancaTareaCompletada,
+    getTareas,
+    deleteTarea,
+    getTareasAdmin,
+    onSubmitTareas,
+    handleCloseTareas,
+    activar: palancaActivarTarea
   }
 }
 
