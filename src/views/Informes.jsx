@@ -144,7 +144,9 @@ const Profile = () => {
   const orderDataByName = () => setOrderByName(true)
   const orderDataByDefault = () => setOrderByName(false)
 
-  if (casos) {
+  if (!casos) {
+    return <button> <Link to='/'>Volvé a la página principal</Link></button>
+  } else {
     return (
       <>
         <Button variant='outline-info' onClick={() => orderDataByName()}>Ordenar por nombre de NNA</Button>{' '}
@@ -216,8 +218,6 @@ const Profile = () => {
         </Table>
       </>
     )
-  } else {
-    return <button> <Link to='/'>Volvé a la página principal</Link></button>
   }
 }
 
