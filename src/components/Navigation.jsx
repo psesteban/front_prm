@@ -83,7 +83,7 @@ const Navigation = () => {
                 aria-hidden='true'
               />
               Entrando...🔐
-              </Button>
+            </Button>
             : <Button onClick={() => handleEntry()}>📧Ingresar</Button>}
         </>
       )

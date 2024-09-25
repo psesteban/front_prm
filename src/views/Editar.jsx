@@ -7,6 +7,7 @@ import ModalFormatos from '../components/ModalFormatos.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { Spinner, Dropdown, DropdownButton, Accordion, Button, ListGroup } from 'react-bootstrap'
 import ModalTareas from '../components/ModalTareas.jsx'
+import { Link } from 'react-router-dom'
 
 const Editar = () => {
   const [listas, setListas] = useState({})
@@ -93,126 +94,130 @@ const Editar = () => {
     }
   }, [])
 
-  return (
-    <>
-      {listas && (<> <h1>Profesionales</h1>
-        <h3>Logros</h3>
-        <Button variant='success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
+  if (getProfesional) {
+    return (
+      <>
+        {listas && (<> <h1>Profesionales</h1>
+          <h3>Logros</h3>
+          <Button variant='success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
+          <Accordion defaultActiveKey='0'>
+            {Object.entries(listas).map(([nombre, datosPersona], index) => (
+              <Accordion.Item key={index} eventKey={index}>
+                <Accordion.Header>{nombre}</Accordion.Header>
+                <Accordion.Body>
+                  <ListGroup variant='flush'>
+                    {datosPersona.map((dato, index) => (
+                      <ListGroup.Item key={index}>
+                        <h4>{dato.logro} {dato.medalla}</h4>
+                        <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
+          <h3>Tareas</h3>
+          <Button variant='outline-success' onClick={() => setShowTareas(true)}>Agregar Tarea</Button>
+          <Accordion defaultActiveKey='0'>
+            {Object.entries(listaDos).map(([nombre, datosPersona], index) => (
+              <Accordion.Item key={index} eventKey={index}>
+                <Accordion.Header>{nombre}</Accordion.Header>
+                <Accordion.Body>
+                  <ListGroup variant='flush'>
+                    {datosPersona.map((dato, index) => (
+                      <ListGroup.Item key={index}>
+                        <h4>{dato.tarea} {dato.activa ? <Button variant='outline-info' onClick={() => activar(dato.id)}>Activar</Button> : '⏩'}</h4>
+                        <Button variant='outline-danger' onClick={() => deleteTarea(dato.id)}> Eliminar</Button>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
+                    </>)}
+        <h1>Casos</h1>
+        <DropdownButton
+          id='dropdown-item-button' title={litleCharge
+            ? <Spinner
+                as='span'
+                animation='grow'
+                size='sm'
+                role='status'
+                aria-hidden='true'
+              />
+            : 'Agregar 👩‍👧‍👦'}
+        >
+          <Dropdown.ItemText>Modificar Datos 👇</Dropdown.ItemText>
+          <Dropdown.Item as='button' onClick={() => handleAddNNa(1)}>Agregar NNJ</Dropdown.Item>
+          <Dropdown.Item as='button' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Dropdown.Item>
+        </DropdownButton>
         <Accordion defaultActiveKey='0'>
-          {Object.entries(listas).map(([nombre, datosPersona], index) => (
-            <Accordion.Item key={index} eventKey={index}>
-              <Accordion.Header>{nombre}</Accordion.Header>
+          {casos.map((caso, index) => (
+            <Accordion.Item eventKey={index} key={index}>
+              <Accordion.Header>{caso.nombre}</Accordion.Header>
               <Accordion.Body>
+                <Button variant='outline-danger' onClick={() => handleCambio(1, caso.id)}>Cambiar Nombre</Button>
+                <Button variant='outline-info' onClick={() => handleCambio(7, caso.id)}>{calcularEdad(caso.edad)} al {formatoFecha(caso.edad)}</Button>
+                <Button variant='outline-info' onClick={() => handleCambio(2, caso.id)}> Rut: {caso.rut}</Button>
+                <Button variant='outline-info' onClick={() => handleCambio(3, caso.id)}>{caso.genero}</Button>
                 <ListGroup variant='flush'>
-                  {datosPersona.map((dato, index) => (
-                    <ListGroup.Item key={index}>
-                      <h4>{dato.logro} {dato.medalla}</h4>
-                      <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
-                    </ListGroup.Item>
-                  ))}
+                  <ListGroup.Item>
+                    <Button variant='outline-info' onClick={() => handleCambio(4, caso.id)}> Nacionalidad {caso.nacionalidad}</Button>
+                  </ListGroup.Item>
+                </ListGroup>
+                <ListGroup variant='flush'>
+                  <ListGroup.Item>
+                    Domicilio: <Button variant='outline-info' onClick={() => handleCambio(5, caso.id)}>🏠{caso.domicilio}</Button>
+                    <Button variant='outline-info' onClick={() => handleCambio(6, caso.id)}>📫{caso.comuna}</Button>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    Redes: <Button variant='outline-info' onClick={() => handleCambio(16, caso.id)}>🎒{caso.curso}</Button> en
+                    <Button variant='outline-info' onClick={() => handleCambio(15, caso.id)}>🏫{caso.educacional}</Button> -
+                    <Button variant='outline-info' onClick={() => handleCambio(14, caso.id)}>🧑‍⚕️{caso.salud}</Button>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    Causa: <Button variant='outline-info' onClick={() => handleCambio(10, caso.id)}>🏛️{caso.juzgado}</Button> -
+                    <Button variant='outline-info' onClick={() => handleCambio(9, caso.id)}>🗃️{caso.rit}</Button> -
+                    <Button variant='outline-info' onClick={() => handleCambio(12, caso.id)}>motivo: ❤️‍🩹{caso.motivo}</Button>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    Fecha de ingreso a PRM: <Button variant='outline-info' onClick={() => handleCambio(11, caso.id)}>{formatoFecha(caso.fecha)}</Button> -
+                    Tratante: <Button variant='outline-info' onClick={() => handleCambio(8, caso.id)}>⚕️{caso.profesional}</Button>
+                  </ListGroup.Item>
+                </ListGroup>
+                <ListGroup variant='flush'>
+                  <ListGroup.Item>
+                    Adulto Responsable: <Button variant='outline-info' onClick={() => handleCambio(17, caso.idAdulto)}> {caso.adulto}</Button>
+                    <Button variant='outline-info' onClick={() => handleCambio(21, caso.idAdulto)}>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Button>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Button variant='outline-info' onClick={() => handleCambio(18, caso.idAdulto)}>Rut: {caso.runAdulto}</Button>
+                    <Button variant='outline-info' onClick={() => handleCambio(13, caso.id)}>🪢{caso.parentesco}</Button>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Button variant='outline-info' onClick={() => handleCambio(19, caso.idAdulto)}>📳{caso.telefono}</Button>
+                    <Button variant='outline-info' onClick={() => handleCambio(20, caso.idAdulto)}>💪{caso.labores}</Button>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, 3)}>📎Conseguir formatos</Button>
+                  </ListGroup.Item>
                 </ListGroup>
               </Accordion.Body>
             </Accordion.Item>
           ))}
         </Accordion>
-        <h3>Tareas</h3>
-        <Button variant='outline-success' onClick={() => setShowTareas(true)}>Agregar Tarea</Button>
-        <Accordion defaultActiveKey='0'>
-          {Object.entries(listaDos).map(([nombre, datosPersona], index) => (
-            <Accordion.Item key={index} eventKey={index}>
-              <Accordion.Header>{nombre}</Accordion.Header>
-              <Accordion.Body>
-                <ListGroup variant='flush'>
-                  {datosPersona.map((dato, index) => (
-                    <ListGroup.Item key={index}>
-                      <h4>{dato.tarea} {dato.activa ? <Button variant='outline-info' onClick={() => activar(dato.id)}>Activar</Button> : '⏩'}</h4>
-                      <Button variant='outline-danger' onClick={() => deleteTarea(dato.id)}> Eliminar</Button>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </Accordion.Body>
-            </Accordion.Item>
-          ))}
-        </Accordion>
-      </>)}
-      <h1>Casos</h1>
-      <DropdownButton
-        id='dropdown-item-button' title={litleCharge
-          ? <Spinner
-              as='span'
-              animation='grow'
-              size='sm'
-              role='status'
-              aria-hidden='true'
-            />
-          : 'Agregar 👩‍👧‍👦'}
-      >
-        <Dropdown.ItemText>Modificar Datos 👇</Dropdown.ItemText>
-        <Dropdown.Item as='button' onClick={() => handleAddNNa(1)}>Agregar NNJ</Dropdown.Item>
-        <Dropdown.Item as='button' onClick={() => handleAddNNa(3)}>Cambiar Adulto Responsable</Dropdown.Item>
-      </DropdownButton>
-      <Accordion defaultActiveKey='0'>
-        {casos.map((caso, index) => (
-          <Accordion.Item eventKey={index} key={index}>
-            <Accordion.Header>{caso.nombre}</Accordion.Header>
-            <Accordion.Body>
-              <Button variant='outline-danger' onClick={() => handleCambio(1, caso.id)}>Cambiar Nombre</Button>
-              <Button variant='outline-info' onClick={() => handleCambio(7, caso.id)}>{calcularEdad(caso.edad)} al {formatoFecha(caso.edad)}</Button>
-              <Button variant='outline-info' onClick={() => handleCambio(2, caso.id)}> Rut: {caso.rut}</Button>
-              <Button variant='outline-info' onClick={() => handleCambio(3, caso.id)}>{caso.genero}</Button>
-              <ListGroup variant='flush'>
-                <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleCambio(4, caso.id)}> Nacionalidad {caso.nacionalidad}</Button>
-                </ListGroup.Item>
-              </ListGroup>
-              <ListGroup variant='flush'>
-                <ListGroup.Item>
-                  Domicilio: <Button variant='outline-info' onClick={() => handleCambio(5, caso.id)}>🏠{caso.domicilio}</Button>
-                  <Button variant='outline-info' onClick={() => handleCambio(6, caso.id)}>📫{caso.comuna}</Button>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  Redes: <Button variant='outline-info' onClick={() => handleCambio(16, caso.id)}>🎒{caso.curso}</Button> en
-                  <Button variant='outline-info' onClick={() => handleCambio(15, caso.id)}>🏫{caso.educacional}</Button> -
-                  <Button variant='outline-info' onClick={() => handleCambio(14, caso.id)}>🧑‍⚕️{caso.salud}</Button>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  Causa: <Button variant='outline-info' onClick={() => handleCambio(10, caso.id)}>🏛️{caso.juzgado}</Button> -
-                  <Button variant='outline-info' onClick={() => handleCambio(9, caso.id)}>🗃️{caso.rit}</Button> -
-                  <Button variant='outline-info' onClick={() => handleCambio(12, caso.id)}>motivo: ❤️‍🩹{caso.motivo}</Button>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  Fecha de ingreso a PRM: <Button variant='outline-info' onClick={() => handleCambio(11, caso.id)}>{formatoFecha(caso.fecha)}</Button> -
-                  Tratante: <Button variant='outline-info' onClick={() => handleCambio(8, caso.id)}>⚕️{caso.profesional}</Button>
-                </ListGroup.Item>
-              </ListGroup>
-              <ListGroup variant='flush'>
-                <ListGroup.Item>
-                  Adulto Responsable: <Button variant='outline-info' onClick={() => handleCambio(17, caso.idAdulto)}> {caso.adulto}</Button>
-                  <Button variant='outline-info' onClick={() => handleCambio(21, caso.idAdulto)}>{calcularEdad(caso.edadAdulto)} al {formatoFecha(caso.edad)}</Button>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleCambio(18, caso.idAdulto)}>Rut: {caso.runAdulto}</Button>
-                  <Button variant='outline-info' onClick={() => handleCambio(13, caso.id)}>🪢{caso.parentesco}</Button>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleCambio(19, caso.idAdulto)}>📳{caso.telefono}</Button>
-                  <Button variant='outline-info' onClick={() => handleCambio(20, caso.idAdulto)}>💪{caso.labores}</Button>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant='outline-info' onClick={() => handleClickFormato(caso.id, caso.nombre, 3)}>📎Conseguir formatos</Button>
-                </ListGroup.Item>
-              </ListGroup>
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
-      <ModalAddNew />
-      <ModalCambios />
-      <ModalFormatos />
-      <ModalLogros />
-      <ModalTareas />
-    </>
-  )
+        <ModalAddNew />
+        <ModalCambios />
+        <ModalFormatos />
+        <ModalLogros />
+        <ModalTareas />
+      </>
+    )
+  } else {
+    return <button> <Link to='/'>Volvé a la página principal</Link></button>
+  }
 }
 
 export default Editar

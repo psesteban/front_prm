@@ -8,7 +8,7 @@ export const Analisis = () => {
   const { getProfesional, duplas, setSelectId, formatoFecha } = useContext(Context)
   const [listas, setListas] = useState({})
   const casos = getProfesional.casos
-  const { handleShow } = useHandle()
+  const { handleShow, getProfesionalData } = useHandle()
   const agrupar = async () => {
     const grupos = {}
     await duplas.forEach(dupla => {
@@ -24,8 +24,10 @@ export const Analisis = () => {
   }
 
   useEffect(() => {
-    agrupar().then((result) => setListas(result))
-    console.log(listas)
+    agrupar().then((result) => setListas(result)).catch((error) => {
+      console.log(error)
+      getProfesionalData()
+    })
   }, [])
 
   if (Object.keys(listas).length > 1) {
