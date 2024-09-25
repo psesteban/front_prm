@@ -12,6 +12,7 @@ import Analisis from './views/Analisis.jsx'
 import Casos from './views/Casos.jsx'
 import Logros from './views/Logros.jsx'
 import Editar from './views/Editar.jsx'
+import NotFound from './views/NotFound.jsx'
 
 const App = () => {
   const globalState = useProfesional()
@@ -30,6 +31,7 @@ const App = () => {
           <Route path='/editar' element={<Editar />} />
           <Route path='/logros' element={<Logros />} />
           <Route path='/casos' element={<Casos />} />
+          <Route path='*' element={<NotFound />} />
         </Routes>
         <ToastContainer />
       </Context.Provider>

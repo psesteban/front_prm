@@ -1,0 +1,7 @@
+.not-found {
+    text-align: center;
+    background-image: url('../public/assets/notfound.webp');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+  }
