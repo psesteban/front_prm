@@ -94,7 +94,7 @@ const Editar = () => {
     }
   }, [])
 
-  if (getProfesional) {
+  if (casos) {
     return (
       <>
         {listas && (<> <h1>Profesionales</h1>
@@ -136,7 +136,7 @@ const Editar = () => {
               </Accordion.Item>
             ))}
           </Accordion>
-                    </>)}
+        </>)}
         <h1>Casos</h1>
         <DropdownButton
           id='dropdown-item-button' title={litleCharge
