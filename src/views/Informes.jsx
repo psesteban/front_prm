@@ -180,7 +180,7 @@ const Profile = () => {
                           <Form>
                             <Row>
                               <Col>
-                                <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+                                <DatePicker dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
                               </Col>
                             </Row>
                           </Form>

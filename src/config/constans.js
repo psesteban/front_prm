@@ -14,5 +14,7 @@ export const ENDPOINT = {
   dato: `${URLBASE}/dato`,
   logros: `${URLBASE}/logros`,
   tareas: `${URLBASE}/tareas`,
-  task: `${URLBASE}/task`
+  task: `${URLBASE}/task`,
+  center: `${URLBASE}/center`,
+  education: `${URLBASE}/center_ed`
 }

@@ -532,7 +532,32 @@ const useHandle = () => {
       })
     setShowLogros(false)
   }
-
+  const handleNewCenter = async (input) => {
+    let resultado = null
+    await axios.post(ENDPOINT.center, { input }, { headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        if (result.data) notifyXpress('centro ingresado')
+        resultado = result.data
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+    return resultado
+  }
+  const handleNewCenterE = async (input) => {
+    let resultado = null
+    await axios.post(ENDPOINT.education, { input }, { headers: { Authorization: `Bearer ${token}` } })
+      .then((result) => {
+        if (result.data) notifyXpress('Escuela ingresada')
+        resultado = result.data
+      })
+      .catch((error) => {
+        console.log(error)
+        console.error(error)
+      })
+    return resultado
+  }
   const deleteLogro = async (id) => {
     const params = { id }
 
@@ -600,7 +625,9 @@ const useHandle = () => {
     getTareasAdmin,
     onSubmitTareas,
     handleCloseTareas,
-    activar: palancaActivarTarea
+    activar: palancaActivarTarea,
+    handleNewCenter,
+    handleNewCenterE
   }
 }
 

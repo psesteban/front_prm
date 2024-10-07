@@ -1,10 +1,24 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import Context from '../contexts/context.js'
 import { Button, Modal, Dropdown, Form, InputGroup, Col, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import useHandle from '../hooks/useHandle.jsx'
+import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker'
+import { es } from 'date-fns/locale/es'
+import 'react-datepicker/dist/react-datepicker.css'
+registerLocale('es', es)
+setDefaultLocale('es')
 
 export const ModalAddNew = () => {
+  const [startDate, setStartDate] = useState(new Date())
+  const [showSecondField, setShowSecondField] = useState(false)
+  const [nameCenter, setNameCenter] = useState('')
+  const [centerId, setCenterId] = useState('')
+  const [selectSalud, setSelectSalud] = useState('')
+  const [showSecondFieldE, setShowSecondFieldE] = useState(false)
+  const [nameCenterE, setNameCenterE] = useState('')
+  const [eId, setEId] = useState('')
+  const [selectE, setSelectE] = useState('')
   const { register, handleSubmit } = useForm()
 
   const {
@@ -21,8 +35,36 @@ export const ModalAddNew = () => {
     handleCloseNna,
     onSubmitNna,
     handleCloseChange,
-    onSubmitChange
+    onSubmitChange,
+    handleNewCenter,
+    handleNewCenterE
   } = useHandle()
+  const handleSelectChange = (event) => {
+    setSelectSalud(event.target.value)
+    setShowSecondField(event.target.value === 'none')
+  }
+  const handleSelectSalud = (event) => {
+    setNameCenter(event.target.value)
+  }
+  const handleNewCenterId = (nameCenter) => handleNewCenter(nameCenter).then((result) => {
+    const { id } = result[0]
+    setCenterId(id)
+    setShowSecondField(false)
+    setSelectSalud(id)
+  })
+  const handleSelectChangeE = (event) => {
+    setSelectE(event.target.value)
+    setShowSecondFieldE(event.target.value === 'none')
+  }
+  const handleSelectE = (event) => {
+    setNameCenterE(event.target.value)
+  }
+  const handleNewCenterIdE = (nameCenter) => handleNewCenterE(nameCenter).then((result) => {
+    const { id } = result[0]
+    setEId(id)
+    setShowSecondFieldE(false)
+    setSelectE(id)
+  })
 
   return (
     <>
@@ -92,7 +134,7 @@ export const ModalAddNew = () => {
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='validationCustom04'>
                   <Form.Label>Fecha de nacimiento</Form.Label>
-                  <Form.Control {...register('nacimiento')} type='date' placeholder='01' required />
+                  <DatePicker {...register('nacimiento')} dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
@@ -207,10 +249,7 @@ export const ModalAddNew = () => {
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='basicNacimiento'>
                   <Form.Label>Fecha de nacimiento</Form.Label>
-                  <Form.Control
-                    type='date' placeholder='01' required
-                    {...register('nacimiento')}
-                  />
+                  <DatePicker {...register('nacimiento')} dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
@@ -257,10 +296,7 @@ export const ModalAddNew = () => {
               <Row className='mb-3'>
                 <Form.Group as={Col} md='3' controlId='basicFechaIngreso'>
                   <Form.Label>Fecha de Ingreso</Form.Label>
-                  <Form.Control
-                    type='date' placeholder='01' required
-                    {...register('ingreso')}
-                  />
+                  <DatePicker {...register('ingreso')} dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
@@ -302,25 +338,45 @@ export const ModalAddNew = () => {
               <Row className='mb-3'>
                 <Form.Group as={Col} md='2' controlId='basicSalud'>
                   <Form.Label>Centro de Salud</Form.Label>
-                  <Form.Select {...register('salud')} aria-label='Default select example'>
-                    <option>Centro principal:</option>
+                  <Form.Select {...register('salud')} aria-label='Default select example' value={selectSalud} onChange={handleSelectChange}>
+                    <option value=''>Centro principal:</option>
                     {listas.salud.map((e) => (
                       <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                    <option value='none'>otro Centro</option>
+                    {centerId && (
+                      <option value={centerId}>{nameCenter}</option>)}
                   </Form.Select>
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una opción
                   </Form.Control.Feedback>
+                  {showSecondField && (
+                    <Form.Group>
+                      <Form.Label>Nuevo Centro de Salud</Form.Label>
+                      <Form.Control type='text' placeholder='nombre del Centro' onChange={handleSelectSalud} />
+                      <Button variant='outline-success' onClick={() => handleNewCenterId(nameCenter)}> Ingresar</Button>
+                    </Form.Group>
+                  )}
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='basicEstablecimiento'>
                   <Form.Label>Establecimiento Educacional</Form.Label>
-                  <Form.Select {...register('educacion')} aria-label='Default select example'>
+                  <Form.Select {...register('educacion')} aria-label='Default select example' value={selectE} onChange={handleSelectChangeE}>
                     <option>EE</option>
                     {listas.educacional.map((e) => (
                       <option key={e.id} value={e.id}>{e.nombre}</option>))}
+                    <option value='none'>otro Establecimiento</option>
+                    {eId && (
+                      <option value={eId}>{nameCenterE}</option>)}
                   </Form.Select>
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una opción
                   </Form.Control.Feedback>
+                  {showSecondFieldE && (
+                    <Form.Group>
+                      <Form.Label>Nuevo E.E.</Form.Label>
+                      <Form.Control type='text' placeholder='nombre del Establecimiento' onChange={handleSelectE} />
+                      <Button variant='outline-success' onClick={() => handleNewCenterIdE(nameCenterE)}> Ingresar</Button>
+                    </Form.Group>
+                  )}
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='basicCurso'>
                   <Form.Label>Curso</Form.Label>
