@@ -120,10 +120,20 @@ const useHandle = () => {
 
   const { notify, notifyIngreso, notifyXpress } = useNotify()
 
+  const transformDate = (fecha) => {
+    const [dia, mes, año] = fecha.split('/')
+    const dateChile = new Date(`${año}-${mes}-${dia}`)
+    const day = String(dateChile.getDate()).padStart(2, '0')
+    const month = String(dateChile.getMonth() + 1).padStart(2, '0')
+    const year = dateChile.getFullYear()
+    const date = `${month}-${day}-${year}`
+    console.log(date)
+    return date
+  }
   const onSubmitAdulto = async (datos) => {
     const id = Math.floor(Math.random() * 900 + 2)
     const responsable = datos.nombre
-    const nacimiento = datos.nacimiento
+    const nacimiento = transformDate(datos.nacimiento)
     const rutParteA = parseInt(datos.rut)
     const rutDigito = datos.rutDigito
     const run = accounting.formatNumber(rutParteA, 0, '.') + '-' + rutDigito
@@ -152,7 +162,7 @@ const useHandle = () => {
   const onSubmitNna = async (datos) => {
     const id = datos.id
     const nombre = datos.nombre
-    const nacimiento = datos.nacimiento
+    const nacimiento = transformDate(datos.nacimiento)
     const rutParteA = parseInt(datos.rut)
     const rutDigito = datos.rutDigito
     const rut = accounting.formatNumber(rutParteA, 0, '.') + '-' + rutDigito
@@ -163,7 +173,7 @@ const useHandle = () => {
     const tratante = datos.tratante
     const causa = datos.causa
     const juzgado = datos.juzgado
-    const ingreso = datos.ingreso
+    const ingreso = transformDate(datos.ingreso)
     const adulto = datos.adulto
     const motivo = datos.motivo
     const salud = datos.salud
