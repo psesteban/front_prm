@@ -134,7 +134,9 @@ export const ModalAddNew = () => {
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='validationCustom04'>
                   <Form.Label>Fecha de nacimiento</Form.Label>
-                  <DatePicker {...register('nacimiento')} dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
+                  <Form.Control {...register('nacimiento')} required>
+                    <DatePicker dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
+                  </Form.Control>
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
