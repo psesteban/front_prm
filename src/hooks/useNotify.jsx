@@ -36,10 +36,21 @@ const useNotify = () => {
     progress: undefined,
     theme: 'dark'
   })
+  const notifyError = (mensaje) => toast.error(mensaje, {
+    position: 'top-left',
+    autoClose: 3000,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'dark'
+  })
   return {
     notifyIngreso,
     notify,
-    notifyXpress
+    notifyXpress,
+    notifyError
   }
 }
 

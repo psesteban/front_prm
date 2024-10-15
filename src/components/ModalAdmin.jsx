@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import Context from '../contexts/context.js'
-import { Button, Modal, Dropdown, Form, InputGroup, Col, Row } from 'react-bootstrap'
+import { Button, Modal, Dropdown, Form, InputGroup, Col, Row, Spinner } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import useHandle from '../hooks/useHandle.jsx'
 import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker'
@@ -11,6 +11,7 @@ setDefaultLocale('es')
 
 export const ModalAddNew = () => {
   const [startDate, setStartDate] = useState(new Date())
+  const [startDatePrm, setStartDatePrm] = useState(new Date())
   const [showSecondField, setShowSecondField] = useState(false)
   const [nameCenter, setNameCenter] = useState('')
   const [centerId, setCenterId] = useState('')
@@ -25,7 +26,8 @@ export const ModalAddNew = () => {
     listas,
     showAdult,
     showNna,
-    showNewAd
+    showNewAd,
+    sending
   } = useContext(Context)
 
   const {
@@ -166,7 +168,7 @@ export const ModalAddNew = () => {
                   feedbackType='invalid'
                 />
               </Form.Group>
-              <Button type='submit'>Ingresar nuevo Adulto Responsable</Button>
+              {sending ? <Spinner animation='border' /> : <Button type='submit'>Ingresar nuevo Adulto Responsable</Button>}
               <p>------------------------ ó -----------------------</p>
               <Dropdown />
               <Button variant='outline-success' onClick={() => handleAdult()}> el Adulto de NNJ ya estaba ingresado</Button>
@@ -256,7 +258,14 @@ export const ModalAddNew = () => {
                 </Form.Group>
                 <Form.Group as={Col} md='3' controlId='basicNacimiento'>
                   <Form.Label>Fecha de nacimiento</Form.Label>
-                  <DatePicker {...register('nacimiento')} dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
+                  <Form.Control
+                    {...register('nacimiento')}
+                    required
+                    value={startDate}
+                    readOnly
+                    style={{ display: 'none' }}
+                  />
+                  <DatePicker dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
@@ -303,7 +312,14 @@ export const ModalAddNew = () => {
               <Row className='mb-3'>
                 <Form.Group as={Col} md='3' controlId='basicFechaIngreso'>
                   <Form.Label>Fecha de Ingreso</Form.Label>
-                  <DatePicker {...register('ingreso')} dateFormat='dd-MM-yyyy' selected={startDate} onChange={(date) => setStartDate(date)} />
+                  <Form.Control
+                    {...register('ingreso')}
+                    required
+                    value={startDatePrm}
+                    readOnly
+                    style={{ display: 'none' }}
+                  />
+                  <DatePicker dateFormat='dd-MM-yyyy' selected={startDatePrm} onChange={(date) => setStartDatePrm(date)} />
                   <Form.Control.Feedback type='invalid'>
                     Ingresa una fecha válida
                   </Form.Control.Feedback>
@@ -415,7 +431,7 @@ export const ModalAddNew = () => {
                   feedbackType='invalid'
                 />
               </Form.Group>
-              <Button type='submit'>Ingresar nuevo NNJ</Button>
+              {sending ? <Spinner animation='border' /> : <Button type='submit'>Ingresar nuevo NNJ</Button>}
             </Form>
           </Modal>
           <Modal show={showNewAd} onHide={handleCloseChange}>
@@ -456,7 +472,7 @@ export const ModalAddNew = () => {
                   Ingresa una opción
                 </Form.Control.Feedback>
               </Form.Group>
-              <Button type='submit'>Realizar el cambio</Button>
+              {sending ? <Spinner animation='border' /> : <Button type='submit'>Realizar el cambio</Button>}
             </Form>
           </Modal>
         </>

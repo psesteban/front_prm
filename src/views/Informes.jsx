@@ -1,5 +1,5 @@
 import Context from '../contexts/context.js'
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import useHandle from '../hooks/useHandle.jsx'
 import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap'
 import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker'
@@ -23,7 +23,8 @@ const Profile = () => {
   const [selectId, setSelectId] = useState(null)
   const [selectNna, setSelectNna] = useState(null)
   const [showModal, setShowModal] = useState(false)
-  const [orderByName, setOrderByName] = useState(false)
+  const [casos, setCasos] = useState(false)
+
   const { getProfesionalData } = useHandle()
   const notify = (message) => toast.success(message, {
     position: 'top-right',
@@ -61,15 +62,9 @@ const Profile = () => {
     setShow(true)
     setSelectId(id)
   }
-  const updatedCasos = Array.isArray(getProfesional.casos)
-    ? getProfesional.casos.map(caso => ({
-      ...caso,
-      fechaInforme: fechaEntrega(caso.fecha, caso.informe).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    }))
-    : []
 
-  const casos = orderByName
-    ? updatedCasos.sort((a, b) => {
+  const cargarCasos = (arrayCasos) => {
+    const casosOrdenados = arrayCasos.sort((a, b) => {
       const nameA = a.nombre.toLowerCase()
       const nameB = b.nombre.toLowerCase()
       if (nameA < nameB) {
@@ -80,7 +75,16 @@ const Profile = () => {
         return 0
       }
     })
-    : updatedCasos
+
+    setCasos(casosOrdenados.map(caso => ({
+      ...caso,
+      fechaInforme: fechaEntrega(caso.fecha, caso.informe).toLocaleDateString('es-CL', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    })))
+  }
 
   const createDate = (date) => new Date(date)
   const formatedDate = (date) => {
@@ -141,16 +145,19 @@ const Profile = () => {
     setSelectId(id)
     setSelectNna(nombre)
   }
-  const orderDataByName = () => setOrderByName(true)
-  const orderDataByDefault = () => setOrderByName(false)
 
+  useEffect(() => {
+    if (getProfesional) {
+      if (getProfesional.casos) {
+        cargarCasos(getProfesional.casos)
+      }
+    } else (setCasos(false))
+  }, [])
   if (!casos) {
-    return <button> <Link to='/'>Volvé a la página principal</Link></button>
+    return <><h1 className='text-center bg-primary text-white rounded'>🍵Me pausé esperando</h1> <button> <Link to='/'>Volvé a la página principal</Link></button></>
   } else {
     return (
       <>
-        <Button variant='outline-info' onClick={() => orderDataByName()}>Ordenar por nombre de NNA</Button>{' '}
-        <Button variant='outline-info' onClick={() => orderDataByDefault()}>Orden previo</Button>
         <Table striped bordered hover>
           <thead>
             <tr>

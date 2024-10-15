@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 0.1rem;
   text-align: center;
+  margin-top: 5rem
 }
 
 body {
@@ -57,3 +58,4 @@ form {
 .btn {
   margin: 1rem;
 }
+

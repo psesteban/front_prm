@@ -11,7 +11,7 @@ const Logros = () => {
   if (honor) {
     return (
       <>
-        <h1>Logros</h1>
+        <h1 className='text-center bg-primary text-white rounded'>Logros</h1>
         <Accordion defaultActiveKey='0'>
           {honor.map((dato, index) => (
             <Accordion.Item key={index} eventKey={index}>
@@ -24,7 +24,7 @@ const Logros = () => {
         </Accordion>
         <h1 className='bg-white'>📈</h1>
         {tareas && (<div>
-          <h3 className='bg-white'>Compromisos Urgentes</h3>
+          <h3 className='text-center bg-primary text-white rounded'>Compromisos Urgentes</h3>
           <ListGroup as='ul'>
             {tareas.map((tarea, index) => (
               tarea.activa

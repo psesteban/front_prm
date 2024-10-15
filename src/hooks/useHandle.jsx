@@ -38,8 +38,8 @@ const useHandle = () => {
     setShowLogros,
     setSesion,
     setTareas,
-    tareas,
-    setShowTareas
+    setShowTareas,
+    setSending
   } = useContext(Context)
 
   // configuración del modal
@@ -118,7 +118,7 @@ const useHandle = () => {
 
   // submit
 
-  const { notify, notifyIngreso, notifyXpress } = useNotify()
+  const { notify, notifyIngreso, notifyXpress, notifyError } = useNotify()
 
   const transformDate = (fecha) => {
     const [dia, mes, año] = fecha.split('/')
@@ -131,6 +131,7 @@ const useHandle = () => {
     return date
   }
   const onSubmitAdulto = async (datos) => {
+    setSending(true)
     const id = Math.floor(Math.random() * 900 + 2)
     const responsable = datos.nombre
     const nacimiento = transformDate(datos.nacimiento)
@@ -200,6 +201,7 @@ const useHandle = () => {
       salud,
       educacion
     }
+    setSending(true)
     postNna(data)
   }
 
@@ -210,6 +212,7 @@ const useHandle = () => {
       notifyXpress('dato de adulto responsable modificado')
       handleCloseChange()
       getProfesionalData()
+      setSending(false)
     }
   }
   )
@@ -295,6 +298,7 @@ const useHandle = () => {
       })
   }
   const onSubmitChangeNna = async (input) => {
+    setSending(true)
     const id = selectId
     let data = input
     if (tipo === 2) {
@@ -313,6 +317,7 @@ const useHandle = () => {
     }).then((r) => {
       console.log(r)
       if (r.status === 200) {
+        setSending(false)
         notifyXpress('dato modificado con exito')
         handleCloseNnaChange()
         getProfesionalData()
@@ -320,6 +325,7 @@ const useHandle = () => {
     })
   }
   const onSubmitChangeAdult = async (input) => {
+    setSending(true)
     const id = selectId
     let data = input
     if (tipo === 18) {
@@ -339,6 +345,7 @@ const useHandle = () => {
       if (r.data) {
         notifyXpress('dato modificado con exito')
         handleCloseAdultChange()
+        setSending(false)
       }
     })
   }
@@ -359,6 +366,7 @@ const useHandle = () => {
   const postAdulto = async (data) => await axios.post(ENDPOINT.adulto, { data }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
+    setSending(false)
     notifyIngreso(data.responsable)
     if (addNna) {
       handleCloseAdult()
@@ -367,15 +375,29 @@ const useHandle = () => {
       handleCloseAdult()
       handleAddNNa(4)
     }
-  })
+  }).catch((error) => {
+    setSending(false)
+    if (error.response.data.code === '22003') notifyError('Ingrese un número de teléfono válido')
+    if (error.response.data.message === 'duplicate key value violates unique constraint "adulto_pkey"') notifyError('Rut ya ingresado anteriormente')
+    else if (error.response.data.message === 'duplicate key value violates unique constraint "adulto_run_key"') notifyError('Rut ya ingresado anteriormente')
+  }
+  )
   const postNna = async (datos) => await axios.post(ENDPOINT.nna, { datos }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {
     if (r.data) {
+      setSending(false)
       notifyIngreso(datos.nombre)
       handleCloseNna()
     }
-  })
+  }).catch((error) => {
+    setSending(false)
+    if (error.response.data.code === '23505') notifyError('Información de NNA ya ingresada')
+    if (error.response.data.message === 'duplicate key value violates unique constraint "nna_pkey"') notifyError('Código de Senainfo ya ingresado anteriormente')
+    if (error.response.data.message === 'duplicate key value violates unique constraint "nna_rut_key"') notifyError('Rut del NNA ya ingresado anteriormente')
+  }
+  )
+
   const postAnalisis = async (id, date, resumen, url) => await axios.put(ENDPOINT.resumen, { id, date, resumen, url }, {
     headers: { Authorization: `Bearer ${token}` }
   }).then((r) => {

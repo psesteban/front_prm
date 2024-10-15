@@ -1,13 +1,14 @@
 import { Container, ProgressBar, Accordion, Spinner, Card, Button } from 'react-bootstrap'
 import Context from '../contexts/context.js'
 import { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import useHandle from '../hooks/useHandle.jsx'
 import ModalResumen from '../components/ModalResumen.jsx'
 import './Analisis.css'
 export const Analisis = () => {
   const { getProfesional, duplas, setSelectId, formatoFecha } = useContext(Context)
   const [listas, setListas] = useState({})
-  const casos = getProfesional.casos
+  const casos = getProfesional?.casos || false
   const { handleShow, getProfesionalData } = useHandle()
   const agrupar = async () => {
     const grupos = {}
@@ -54,15 +55,10 @@ export const Analisis = () => {
     )
   } else {
     return (
-      <h1>Espere por favor
-        <Spinner
-          as='span'
-          animation='grow'
-          size='sm'
-          role='status'
-          aria-hidden='true'
-        />
-      </h1>
+      <div>
+        <h1 className='text-center bg-primary text-white rounded'>🍵Me pausé esperando</h1>
+        <button> <Link to='/'>Volvé a la página principal</Link></button>
+      </div>
     )
   }
 }

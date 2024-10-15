@@ -33,6 +33,7 @@ const useProfesional = () => {
   const [honor, setHonor] = useState(null)
   const [tareas, setTareas] = useState(null)
   const [showTareas, setShowTareas] = useState(null)
+  const [sending, setSending] = useState(false)
 
   const calcularEdad = (fechaNacimiento) => {
     const fechaNacimientoObj = new Date(fechaNacimiento)
@@ -482,7 +483,9 @@ const useProfesional = () => {
     tareas,
     setTareas,
     showTareas,
-    setShowTareas
+    setShowTareas,
+    sending,
+    setSending
   }
 }
 

@@ -2,17 +2,12 @@ import Context from '../contexts/context.js'
 import useHandle from '../hooks/useHandle.jsx'
 import { ModalAddNew } from '../components/ModalAdmin.jsx'
 import { ModalCambios } from '../components/ModalCambios.jsx'
-import ModalLogros from '../components/ModalLogros.jsx'
 import ModalFormatos from '../components/ModalFormatos.jsx'
 import { useContext, useEffect, useState } from 'react'
 import { Spinner, Dropdown, DropdownButton, Accordion, Button, ListGroup } from 'react-bootstrap'
-import ModalTareas from '../components/ModalTareas.jsx'
 import { Link } from 'react-router-dom'
 
 const Editar = () => {
-  const [listas, setListas] = useState({})
-  const [listaDos, setListaDos] = useState({})
-
   const {
     getProfesional,
     litleCharge,
@@ -20,23 +15,15 @@ const Editar = () => {
     setShowAdultChange,
     setShowNnaChange,
     setSelectId,
-    formatoFecha,
-    setShowLogros,
-    honor,
-    tareas,
-    setShowTareas
+    formatoFecha
   } = useContext(Context)
   const {
     handleAddNNa,
     getListas,
     handleClickFormato,
-    getProfesionales,
-    getLogros,
-    deleteLogro,
-    deleteTarea,
-    activar,
-    getTareasAdmin
+    getProfesionales
   } = useHandle()
+  const [casos, setCasos] = useState(null)
 
   const handleCambio = (tipo, id) => {
     setTipo(tipo)
@@ -54,90 +41,41 @@ const Editar = () => {
     const edad = Math.floor(diferenciaEnMS / (1000 * 60 * 60 * 24 * 365.25))
     return `${edad} años`
   }
-  const casos = getProfesional.casos.sort((a, b) => {
-    const nameA = a.nombre.toLowerCase()
-    const nameB = b.nombre.toLowerCase()
-    if (nameA < nameB) {
-      return -1
-    } else if (nameA > nameB) {
-      return 1
+  const cargaCasos = () => {
+    if (Array.isArray(getProfesional.casos) && getProfesional.casos.length > 0) {
+      try {
+        setCasos(getProfesional.casos.sort((a, b) => {
+          const nameA = a.nombre.toLowerCase()
+          const nameB = b.nombre.toLowerCase()
+          if (nameA < nameB) {
+            return -1
+          } else if (nameA > nameB) {
+            return 1
+          } else {
+            return 0
+          }
+        }))
+      } catch (error) {
+        console.error('Error al ordenar los casos:', error)
+        return false
+      }
     } else {
-      return 0
+      return false
     }
-  })
-  const agrupar = async () => {
-    const grupos = honor.reduce((acc, persona) => {
-      const nombre = persona.nombre
-      acc[nombre] = acc[nombre] || []
-      acc[nombre].push(persona)
-      return acc
-    }, {})
-    return grupos
   }
-  const agruparTareas = async () => {
-    const grupos = tareas.reduce((acc, persona) => {
-      const nombre = persona.nombre
-      acc[nombre] = acc[nombre] || []
-      acc[nombre].push(persona)
-      return acc
-    }, {})
-    return grupos
-  }
+
   useEffect(() => {
-    if (getProfesional.id) {
+    if (getProfesional) {
       getListas()
       getProfesionales(getProfesional.id)
-      getLogros(getProfesional.id)
-      getTareasAdmin(getProfesional.id)
-      agrupar().then((result) => setListas(result))
-      agruparTareas().then((result) => setListaDos(result))
+      cargaCasos()
     }
   }, [])
 
   if (casos) {
     return (
       <>
-        {listas && (<> <h1>Profesionales</h1>
-          <h3>Logros</h3>
-          <Button variant='success' onClick={() => setShowLogros(true)}>Agregar Logro</Button>
-          <Accordion defaultActiveKey='0'>
-            {Object.entries(listas).map(([nombre, datosPersona], index) => (
-              <Accordion.Item key={index} eventKey={index}>
-                <Accordion.Header>{nombre}</Accordion.Header>
-                <Accordion.Body>
-                  <ListGroup variant='flush'>
-                    {datosPersona.map((dato, index) => (
-                      <ListGroup.Item key={index}>
-                        <h4>{dato.logro} {dato.medalla}</h4>
-                        <Button variant='outline-danger' onClick={() => deleteLogro(dato.id)}> Eliminar</Button>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                </Accordion.Body>
-              </Accordion.Item>
-            ))}
-          </Accordion>
-          <h3>Tareas</h3>
-          <Button variant='outline-success' onClick={() => setShowTareas(true)}>Agregar Tarea</Button>
-          <Accordion defaultActiveKey='0'>
-            {Object.entries(listaDos).map(([nombre, datosPersona], index) => (
-              <Accordion.Item key={index} eventKey={index}>
-                <Accordion.Header>{nombre}</Accordion.Header>
-                <Accordion.Body>
-                  <ListGroup variant='flush'>
-                    {datosPersona.map((dato, index) => (
-                      <ListGroup.Item key={index}>
-                        <h4>{dato.tarea} {dato.activa ? <Button variant='outline-info' onClick={() => activar(dato.id)}>Activar</Button> : '⏩'}</h4>
-                        <Button variant='outline-danger' onClick={() => deleteTarea(dato.id)}> Eliminar</Button>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                </Accordion.Body>
-              </Accordion.Item>
-            ))}
-          </Accordion>
-        </>)}
-        <h1>Casos</h1>
+        <h1 className='text-center bg-primary text-white rounded'>Casos</h1>
         <DropdownButton
           id='dropdown-item-button' title={litleCharge
             ? <Spinner
@@ -211,12 +149,15 @@ const Editar = () => {
         <ModalAddNew />
         <ModalCambios />
         <ModalFormatos />
-        <ModalLogros />
-        <ModalTareas />
       </>
     )
   } else {
-    return <button> <Link to='/'>Volvé a la página principal</Link></button>
+    return (
+      <div>
+        <h1 className='text-center bg-primary text-white rounded'>🍵Me pausé esperando</h1>
+        <button> <Link to='/'>Volvé a la página principal</Link></button>
+      </div>
+    )
   }
 }
 
