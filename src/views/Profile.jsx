@@ -28,6 +28,7 @@ const Profile = () => {
       const result = await axios.get(ENDPOINT.user, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      console.log(result)
       const resultado = result.data
       await setProfesional(resultado)
       const { profesional } = resultado
