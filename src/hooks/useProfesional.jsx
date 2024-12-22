@@ -90,52 +90,8 @@ const useProfesional = () => {
     } else {
       console.log(`Ingreso de asesor: ${tratante} PS, ${ts} TS`)
     }
+
     if (tipo === 1) {
-      fetch('/templates/PII_Diag.docx')
-        .then(response => response.arrayBuffer())
-        .then(content => {
-          const zip = new PizZip(content)
-          const doc = new Docxtemplater().loadZip(zip)
-          const vencimiento = fechaEntrega(nna.ingreso, 1).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
-          const context = {
-            el_nombre: nombres,
-            el_apellido_p: apellidoPaterno,
-            el_apellido_m: apellidoMaterno,
-            f_PII: ingreso,
-            ft_PII: vencimiento,
-            f_nac: fechaNacimiento,
-            edad: edadNna,
-            sexo: nna.gen,
-            nombre_ad: nna.responsable,
-            fam: nna.parentesco,
-            motiv: nna.motivo,
-            f_egreso: egreso,
-            f_ingreso: ingreso,
-            n_psico: tratante,
-            n_ts: ts
-          }
-
-          doc.setData(context)
-
-          try {
-            doc.render()
-          } catch (error) {
-            console.error('Error al generar el documento:', error)
-            return
-          }
-
-          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
-          const filename = `PII_Diag_${nna.nombre}.docx`
-          const link = document.createElement('a')
-          link.href = URL.createObjectURL(out)
-          link.download = filename
-          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        })
-    }
-    if (tipo === 2) {
       fetch('/templates/PII.docx')
         .then(response => response.arrayBuffer())
         .then(content => {
@@ -180,7 +136,7 @@ const useProfesional = () => {
           document.body.removeChild(link)
         })
     }
-    if (tipo === 3) {
+    if (tipo === 2) {
       fetch('/templates/IPD.docx')
         .then(response => response.arrayBuffer())
         .then(content => {
@@ -237,7 +193,7 @@ const useProfesional = () => {
           document.body.removeChild(link)
         })
     }
-    if (tipo === 4) {
+    if (tipo === 3) {
       fetch('/templates/IA.docx')
         .then(response => response.arrayBuffer())
         .then(content => {
@@ -300,57 +256,7 @@ const useProfesional = () => {
           document.body.removeChild(link)
         })
     }
-    if (tipo === 5) {
-      fetch('/templates/Prorroga.docx')
-        .then(response => response.arrayBuffer())
-        .then(content => {
-          const zip = new PizZip(content)
-          const doc = new Docxtemplater().loadZip(zip)
-          const edadAdulto = calcularEdad(nna.nacimiento)
-          const vencimiento = fechaEntrega(nna.ingreso, nna.numero).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
-          const context = {
-            el_nombre: nombres,
-            el_apellido_p: apellidoPaterno,
-            el_apellido_m: apellidoMaterno,
-            Rut: nna.rut,
-            curso: nna.curso,
-            domicilio: nna.domicilio,
-            comuna: nna.comuna,
-            Rit: nna.rit,
-            ft_PII: vencimiento,
-            f_nac: fechaNacimiento,
-            edad: edadNna,
-            sexo: nna.gen,
-            nombre_ad: nna.responsable,
-            fam: nna.parentesco,
-            fam_edad: edadAdulto,
-            fam_nac: new Date(nna.nacimiento).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
-            fam_Rut: nna.run,
-            motiv: nna.motivo,
-            f_ingreso: ingreso,
-            fam_fono: nna.fono
-          }
-
-          doc.setData(context)
-
-          try {
-            doc.render()
-          } catch (error) {
-            console.error('Error al generar el documento:', error)
-            return
-          }
-
-          const out = doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
-          const filename = `Prorroga_${nna.nombre}.docx`
-          const link = document.createElement('a')
-          link.href = URL.createObjectURL(out)
-          link.download = filename
-          // Adjuntar el enlace temporal al DOM, hacer clic en él y luego eliminarlo
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        })
-    }
+  
   }
 
   const fechaEntrega = (fecha, quarters) => {
