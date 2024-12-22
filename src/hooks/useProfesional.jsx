@@ -256,7 +256,6 @@ const useProfesional = () => {
           document.body.removeChild(link)
         })
     }
-  
   }
 
   const fechaEntrega = (fecha, quarters) => {
