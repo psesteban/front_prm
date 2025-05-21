@@ -1,4 +1,4 @@
-AFT-PF Case Management System
+PRM Case Management System
 This project is a web application designed to manage cases of psychosocial care. It provides tools for organizing the delivery of reports, viewing relevant information for each case, and generating automatic documentation using predefined templates. The application is built with React and Vite, leveraging modern web technologies for a fast and efficient user experience.
 
 Features
